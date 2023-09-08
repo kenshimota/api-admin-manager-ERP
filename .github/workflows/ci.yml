@@ -1,0 +1,64 @@
+name: API MANAGER SCHOOL
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  container-job:
+    runs-on: ubuntu-latest
+    environment: ci-test
+
+    env:
+      DATABASE_NAME_CI: manager-school-ci
+      DATABASE_USERNAME_CI: user
+      DATABASE_PASSWORD_CI: manager
+      DATABASE_HOSTNAME_CI: localhost
+      DATABASE_NAME_TEST: manager-school-ci
+      DATABASE_USERNAME_TEST: user
+      DATABASE_PASSWORD_TEST: manager
+      DATABASE_HOSTNAME_TEST: localhost
+      RAILS_ENV: ci
+      SECRET_KEY_BASE: ci_test_key
+
+    services:
+      postgres:
+        image: postgres:14-alpine3.17
+
+        # environment database
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: manager
+          POSTGRES_DB: manager-school-ci
+
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@ec02537da5712d66d4d50a0f33b7eb52773b5ed1
+        with:
+          ruby-version: "3.0.2"
+      - name: install dependencies
+        run: |
+          bundle install
+      - name: executing migrations
+        run: |
+          rails db:migrate
+      - name: executing unit tests
+        run: |
+          RAILS_ENV=ci rspec
