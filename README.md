@@ -1,24 +1,31 @@
-# README
+# API-ADMIN-MANAGER-ERP
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## requirements
+* You must have installed <b>Docker >= 20.10.21</b>
+* You must have installed <b>Docker-compose >= 1.29.2</b>
 
-Things you may want to cover:
+## install
+```shell
+$ cp .env.example .env
 
-* Ruby version
+# you must edit your enviroment variables
+# this is example edit document with vim, but
+# you can use your editor favorite
+$ vim .env
 
-* System dependencies
+# create the images about project
+$ docker-compose build
 
-* Configuration
+# this command will execute the migrations and seeders
+$ docker-compose run web rails db:create db:migrate db:seed
+```
 
-* Database creation
+# start web app
+```shell
+$ docker-compose up -d
+```
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+## test units
+```shell
+$ docker-compose exec web rspec
+```
