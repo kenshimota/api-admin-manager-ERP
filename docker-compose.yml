@@ -8,7 +8,7 @@ services:
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
   web:
     build: .
-    image: api-manager-school:1.0.0
+    image: api-admin-manager-erp:1.0.0
     env_file: .env
     environment:
       - DATABASE_HOSTNAME_DEV=${DATABASE_HOST}
