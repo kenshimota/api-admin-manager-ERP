@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   include Devise::JWT::RevocationStrategies::JTIMatcher
 
+  # validations model User
   validates :last_name, presence: true, length: { minimum: 3 }
   validates :first_name, presence: true, length: { minimum: 3 }
   validates :username, presence: true, uniqueness: true, length: { minimum: 3 }
