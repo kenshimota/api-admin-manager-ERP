@@ -49,3 +49,5 @@ group :development do
 end
 
 gem "fast_jsonapi", "~> 1.5"
+
+gem "rack-cors", "~> 2.0"
