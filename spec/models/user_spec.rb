@@ -23,7 +23,16 @@ RSpec.describe User, type: :model do
 
   let(:password) { "Manag3r." }
   let(:email) { Faker::Internet.email }
-  let(:username) { Faker::Internet.user_name }
+  let(:username) do
+    str = ""
+
+    while str.length < 3
+      str = Faker::Internet.user_name
+    end
+
+    str
+  end
+
   let(:identity_document) { Faker::Number.number(digits: 10) }
   let(:user_data) { { username: username, password: password, identity_document: identity_document, last_name: last_name, first_name: first_name, email: email } }
 
