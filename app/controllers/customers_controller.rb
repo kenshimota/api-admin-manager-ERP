@@ -22,21 +22,49 @@ class CustomersController < VerifyAuthenticateController
 
   # POST /customers
   def create
-    @customer = Customer.new(customer_params)
+    ActiveRecord::Base.transaction do
+      data = customer_params.clone
+      phones_param = data[:phones]
+      data[:phones] = []
 
-    if @customer.save
-      render json: @customer, status: :created, location: @customer
-    else
-      show_error @customer
+      @customer = Customer.create!(data)
+
+      if phones_param
+        phones = phones_param.map { |phone_data| Phone.find_or_create_by!(phone_data) }
+        phones.each { |phone| @customer.phones << phone }
+      end
+
+      render json: @customer, status: :created
+    rescue ActiveRecord::RecordInvalid => e
+      show_error e.record
+      raise ActiveRecord::Rollback
     end
   end
 
   # PATCH/PUT /customers/1
   def update
-    if @customer.update(customer_params)
+    ActiveRecord::Base.transaction do
+      data = customer_params.clone
+      phones_param = data[:phones]
+
+      if phones_param
+        phones = phones_param.map { |phone_data| Phone.find_or_create_by!(phone_data) }
+        @customer.phone_ids = phones.map { |phone| phone.id }
+      end
+
+      @customer.update!(
+        name: data[:name],
+        last_name: data[:last_name],
+        city_id: data[:city_id],
+        address: data[:address],
+        state_id: data[:state_id],
+        identity_document: data[:identity_document],
+      )
+
       render json: @customer, status: :accepted
-    else
-      show_error @customer
+    rescue ActiveRecord::RecordInvalid => e
+      show_error e.record
+      raise ActiveRecord::Rollback
     end
   end
 
@@ -54,6 +82,14 @@ class CustomersController < VerifyAuthenticateController
 
   # Only allow a list of trusted parameters through.
   def customer_params
-    params.require(:customer).permit(:name, :last_name, :identity_document, :state_id, :city_id, :address)
+    params.require(:customer).permit(
+      :name,
+      :last_name,
+      :identity_document,
+      :state_id,
+      :city_id,
+      :address,
+      :phones => [:prefix, :number],
+    )
   end
 end

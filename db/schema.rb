@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_23_203859) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_23_210722) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -33,6 +33,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_23_203859) do
     t.index ["city_id"], name: "index_customers_on_city_id"
     t.index ["identity_document"], name: "index_customers_on_identity_document", unique: true
     t.index ["state_id"], name: "index_customers_on_state_id"
+  end
+
+  create_table "customers_phones", force: :cascade do |t|
+    t.bigint "customer_id", null: false
+    t.bigint "phone_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id", "phone_id"], name: "index_customers_phones_on_customer_id_and_phone_id", unique: true
+    t.index ["customer_id"], name: "index_customers_phones_on_customer_id"
+    t.index ["phone_id"], name: "index_customers_phones_on_phone_id"
   end
 
   create_table "phones", force: :cascade do |t|
@@ -80,4 +90,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_23_203859) do
 
   add_foreign_key "customers", "cities"
   add_foreign_key "customers", "states"
+  add_foreign_key "customers_phones", "customers"
+  add_foreign_key "customers_phones", "phones"
 end

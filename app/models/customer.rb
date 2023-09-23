@@ -1,6 +1,8 @@
 class Customer < ApplicationRecord
   belongs_to :state
   belongs_to :city
+  has_many :customers_phones
+  has_many :phones, through: :customers_phones
 
   validates :name, presence: true, length: { minimum: 3 }
   validates :last_name, presence: true, length: { minimum: 3 }
