@@ -71,4 +71,9 @@ RSpec.configure do |config|
   FactoryBot.reload
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+
+  config.before(:example, :authorized => true) do
+    @user = FactoryBot.create(:user)
+    sign_in @user
+  end
 end

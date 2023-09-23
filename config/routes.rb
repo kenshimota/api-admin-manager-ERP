@@ -16,5 +16,6 @@ Rails.application.routes.draw do
     resources :taxes
     resources :cities
     resources :states
+    resources :customers
   end
 end

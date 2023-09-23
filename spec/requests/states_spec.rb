@@ -10,28 +10,27 @@ RSpec.describe "States", type: :request do
     end
   end
 
-  context "Request with token" do
-    before(:all) do
-      n = 0
-      states = ["Amazonas", "Anzoátegui", "Apure", "Aragua", "Barinas", "Bolívar",
-                "Carabobo", "Cojedes", "Delta Amacuro", "Dependencias Federales",
-                "Distrito Federal", "Falcón", "Guárico", "Lara", "Mérida", "Miranda",
-                "Monagas", "Nueva Esparta", "Portuguesa", "Sucre", "Táchira",
-                "Trujillo", "Vargas", "Yaracuy", "Zulia"]
-
-      states.each do |state_name|
-        State.create(name: state_name)
-      end
-
-      FactoryBot.create(:state)
-    end
-
+  describe "Request with token" do
     before(:each) do
       @user = FactoryBot.create(:user)
       sign_in @user
     end
 
-    describe "GET /states" do
+    context "GET /states" do
+      before(:each) do
+        states = ["Amazonas", "Anzoátegui", "Apure", "Aragua", "Barinas", "Bolívar",
+                  "Carabobo", "Cojedes", "Delta Amacuro", "Dependencias Federales",
+                  "Distrito Federal", "Falcón", "Guárico", "Lara", "Mérida", "Miranda",
+                  "Monagas", "Nueva Esparta", "Portuguesa", "Sucre", "Táchira",
+                  "Trujillo", "Vargas", "Yaracuy", "Zulia"]
+
+        states.each do |state_name|
+          State.create(name: state_name)
+        end
+
+        FactoryBot.create(:state)
+      end
+
       it "request without query params" do
         get states_path
         body = JSON.parse(response.body)

@@ -54,16 +54,25 @@ RSpec.describe "Taxes", type: :request do
       sign_in @user
     end
 
-    before(:all) do
-      n = 0
-      while n <= 33
-        percentage = (n.to_f + 1) / 100
-        a = Tax.create(name: "Impuesto #{n + 1}", percentage: percentage)
-        n += 1
-      end
-    end
-
     describe "GET /taxes" do
+      before(:all) do
+        n = 0
+        while n <= 33
+          percentage = (n.to_f + 1) / 100
+          a = Tax.create(name: "Impuesto #{n + 1}", percentage: percentage)
+          n += 1
+        end
+      end
+
+      after(:all) do
+        n = 0
+        while n <= 33
+          percentage = (n.to_f + 1) / 100
+          a = Tax.destroy_by(name: "Impuesto #{n + 1}", percentage: percentage)
+          n += 1
+        end
+      end
+
       before(:each) do
         FactoryBot.create(:tax_without_percentage)
       end
