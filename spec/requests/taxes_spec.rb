@@ -54,16 +54,18 @@ RSpec.describe "Taxes", type: :request do
       sign_in @user
     end
 
+    before(:all) do
+      n = 0
+      while n <= 33
+        percentage = (n.to_f + 1) / 100
+        a = Tax.create(name: "Impuesto #{n + 1}", percentage: percentage)
+        n += 1
+      end
+    end
+
     describe "GET /taxes" do
       before(:each) do
-        n = 0
         FactoryBot.create(:tax_without_percentage)
-
-        while n <= 33
-          percentage = (n.to_f + 1) / 100
-          a = Tax.create(name: "Impuesto #{n + 1}", percentage: percentage)
-          n += 1
-        end
       end
 
       it "request without query params" do
@@ -148,7 +150,7 @@ RSpec.describe "Taxes", type: :request do
 
       it "ok" do
         put tax_path(tax), params: { tax: { name: "impuesto 99", percentage: 0.99 } }
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:accepted)
       end
     end
 

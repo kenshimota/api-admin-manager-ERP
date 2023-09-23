@@ -26,7 +26,7 @@ class TaxesController < VerifyAuthenticateController
       return show_error @tax
     end
 
-    render json: @tax, status: :ok
+    render json: @tax, status: :accepted
   end
 
   def destroy
