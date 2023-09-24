@@ -10,12 +10,58 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_10_015933) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_23_210722) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "taxes", force: :cascade do |t|
+  create_table "cities", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_cities_on_name", unique: true
+  end
+
+  create_table "customers", force: :cascade do |t|
     t.string "name"
+    t.string "last_name"
+    t.bigint "identity_document"
+    t.bigint "state_id", null: false
+    t.bigint "city_id", null: false
+    t.string "address"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["city_id"], name: "index_customers_on_city_id"
+    t.index ["identity_document"], name: "index_customers_on_identity_document", unique: true
+    t.index ["state_id"], name: "index_customers_on_state_id"
+  end
+
+  create_table "customers_phones", force: :cascade do |t|
+    t.bigint "customer_id", null: false
+    t.bigint "phone_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id", "phone_id"], name: "index_customers_phones_on_customer_id_and_phone_id", unique: true
+    t.index ["customer_id"], name: "index_customers_phones_on_customer_id"
+    t.index ["phone_id"], name: "index_customers_phones_on_phone_id"
+  end
+
+  create_table "phones", force: :cascade do |t|
+    t.integer "prefix", null: false
+    t.bigint "number", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["prefix", "number"], name: "index_phones_on_prefix_and_number", unique: true
+  end
+
+  create_table "states", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_states_on_name", unique: true
+  end
+
+  create_table "taxes", force: :cascade do |t|
+    t.string "name", null: false
     t.decimal "percentage", precision: 4, scale: 4, default: "0.0", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -42,4 +88,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_10_015933) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "customers", "cities"
+  add_foreign_key "customers", "states"
+  add_foreign_key "customers_phones", "customers"
+  add_foreign_key "customers_phones", "phones"
 end

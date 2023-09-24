@@ -3,8 +3,14 @@ class TaxesController < VerifyAuthenticateController
 
   def index
     search = params[:q]
-    taxes = Tax.search(search).page(params[:page])
-    render json: taxes
+    order_by = params[:order_by]
+
+    @taxes = Tax
+      .search(search)
+      .order_field(order_by)
+      .page(params[:page])
+
+    render json: @taxes
   end
 
   def create
@@ -26,7 +32,7 @@ class TaxesController < VerifyAuthenticateController
       return show_error @tax
     end
 
-    render json: @tax, status: :ok
+    render json: @tax, status: :accepted
   end
 
   def destroy
