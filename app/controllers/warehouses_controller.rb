@@ -6,10 +6,13 @@ class WarehousesController < VerifyAuthenticateController
     search = params[:q]
     order_by = params[:order_by]
 
+    @warehouses = Warehouse.all
+=begin
     @warehouses = Warehouse
       .search(search)
       .order_field(order_by)
       .page(params[:page])
+=end
 
     render json: @warehouses
   end
