@@ -42,7 +42,6 @@ RSpec.describe "/warehouses", type: :request do
     end
 
     it "a user can't see the list warehouse only if you've signin" do
-      Warehouse.create! valid_attributes
       get warehouses_url
       expect(response).to have_http_status(:unauthorized)
     end
