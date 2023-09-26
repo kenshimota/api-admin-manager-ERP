@@ -1,9 +1,15 @@
-class WarehousesController < ApplicationController
+class WarehousesController < VerifyAuthenticateController
   before_action :set_warehouse, only: %i[ show update destroy ]
 
   # GET /warehouses
   def index
-    @warehouses = Warehouse.all
+    search = params[:q]
+    order_by = params[:order_by]
+
+    @warehouses = Warehouse
+      .search(search)
+      .order_field(order_by)
+      .page(params[:page])
 
     render json: @warehouses
   end
@@ -16,9 +22,8 @@ class WarehousesController < ApplicationController
   # POST /warehouses
   def create
     @warehouse = Warehouse.new(warehouse_params)
-
     if @warehouse.save
-      render json: @warehouse, status: :created, location: @warehouse
+      render json: @warehouse, status: :created
     else
       render json: @warehouse.errors, status: :unprocessable_entity
     end
@@ -27,7 +32,7 @@ class WarehousesController < ApplicationController
   # PATCH/PUT /warehouses/1
   def update
     if @warehouse.update(warehouse_params)
-      render json: @warehouse
+      render json: @warehouse, status: :accepted
     else
       render json: @warehouse.errors, status: :unprocessable_entity
     end
@@ -39,13 +44,14 @@ class WarehousesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_warehouse
-      @warehouse = Warehouse.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def warehouse_params
-      params.require(:warehouse).permit(:name, :address)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_warehouse
+    @warehouse = Warehouse.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def warehouse_params
+    params.require(:warehouse).permit(:name, :address)
+  end
 end

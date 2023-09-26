@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :warehouse do
-    name { "MyString" }
-    address { "MyString" }
+    name { "warehouse first" }
+    address { "address first" }
   end
 end
