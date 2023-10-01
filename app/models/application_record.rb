@@ -15,7 +15,7 @@ class ApplicationRecord < ActiveRecord::Base
     end
 
     v = {}
-    by = order_by[:order].to_s
+    by = order_by[:order].nil? ? :asc : order_by[:order].to_sym
     by = valid_by.include?(by) ? by : :asc
 
     v[order_by[:field].to_s] = by
