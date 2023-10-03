@@ -1,9 +1,8 @@
 FactoryBot.define do
   factory :product do
-    name { "MyString" }
+    name { "product app - 1" }
     code { "MyString" }
-    stock { 1 }
-    reserved { 1 }
-    tax { nil }
+    bar_code { "12345678" }
+    tax { Tax.first }
   end
 end

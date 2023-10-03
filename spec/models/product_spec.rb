@@ -66,7 +66,7 @@ RSpec.describe Product, type: :model do
       expect(product).to_not be_valid
     end
 
-    it "a product might be valid without bar_code or the product have a code with greater 12 characters" do
+    it "a product might be valid without bar_code or the product have a code with greater 8 characters" do
       data = params_validated.clone
       data[:bar_code] = nil
       product = Product.new(data)
@@ -78,9 +78,14 @@ RSpec.describe Product, type: :model do
       expect(product).to be_valid
 
       data = params_validated.clone
-      data[:bar_code] = "na"
+      data[:bar_code] = "1234567"
       product = Product.new(data)
       expect(product).to_not be_valid
+
+      data = params_validated.clone
+      data[:bar_code] = "12345678"
+      product = Product.new(data)
+      expect(product).to be_valid
     end
 
     it "a code of product should not repeat" do
