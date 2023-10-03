@@ -108,6 +108,34 @@ RSpec.describe "/customers", type: :request do
       expect(response).to have_http_status(200)
       expect(body.length).to be(0)
     end
+
+    it "request with query params order_by '{ field: :name, order: :desc }' ", :authorized => true do
+      customers = Customer.order(name: :desc).page(1)
+      get customers_url, params: { order_by: { field: :name, order: :desc }, page: 1 }
+      body = JSON.parse(response.body)
+
+      expect(response).to have_http_status(200)
+      expect(body.map { |customer| customer["id"] }).to eq(customers.map { |customer| customer.id })
+    end
+
+    it "request with query params order_by '{ field: :name }' ", :authorized => true do
+      customers = Customer.order(name: :asc).page(1)
+      get customers_url, params: { order_by: { field: :name }, page: 1 }
+      body = JSON.parse(response.body)
+
+      expect(response).to have_http_status(200)
+      expect(body.map { |customer| customer["id"] }).to eq(customers.map { |customer| customer.id })
+    end
+
+    it "request with query params order_by '{  field: :name, order: :asc }' ", :authorized => true do
+      get customers_url, params: { order_by: { field: :name, order: :asc } }
+      body = JSON.parse(response.body)
+
+      customers = Customer.order(name: :asc).page(1)
+
+      expect(response).to have_http_status(200)
+      expect(body.map { |customer| customer["id"] }).to eq(customers.map { |customer| customer.id })
+    end
   end
 
   describe "GET /show" do

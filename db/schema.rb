@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_26_011540) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_01_041215) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -51,6 +51,19 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_26_011540) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["prefix", "number"], name: "index_phones_on_prefix_and_number", unique: true
+  end
+
+  create_table "products", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "code"
+    t.string "bar_code"
+    t.integer "stock", default: 0, null: false
+    t.integer "reserved", default: 0, null: false
+    t.bigint "tax_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_products_on_code", unique: true
+    t.index ["tax_id"], name: "index_products_on_tax_id"
   end
 
   create_table "states", force: :cascade do |t|
@@ -100,4 +113,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_26_011540) do
   add_foreign_key "customers", "states"
   add_foreign_key "customers_phones", "customers"
   add_foreign_key "customers_phones", "phones"
+  add_foreign_key "products", "taxes"
 end
