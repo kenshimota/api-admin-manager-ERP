@@ -31,19 +31,19 @@ class Inventory < ApplicationRecord
   end
 
   def increment_stock!(amount)
-    @stock = self.stock
-    self.increment :stock, amount
-    self.product.increment :stock, amount
-    self.save!
-    self.product.save!
+    if amount != 0
+      @stock = self.stock
+      self.increment! :stock, amount
+      self.product.increment! :stock, amount
 
-    InventoriesHistory.create!(
-      user: @user,
-      inventory: self,
-      before_amount: @stock,
-      after_amount: @stock + amount,
-      observations: self.observations,
-    )
+      InventoriesHistory.create!(
+        user: @user,
+        inventory: self,
+        before_amount: @stock,
+        after_amount: @stock + amount,
+        observations: self.observations,
+      )
+    end
   end
 
   def increment_stock(amount)
