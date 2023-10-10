@@ -36,13 +36,7 @@ class TaxesController < VerifyAuthenticateController
   end
 
   def destroy
-    if !@tax
-      return render status: :not_found
-    end
-
-    if !@tax.destroy
-      return show_error @tax
-    end
+    @tax.destroy
   end
 
   private

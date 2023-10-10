@@ -29,6 +29,11 @@ cities = [
   "Achaguas", "Biruaca", "Santa Bárbara (Barinas)", "La Guaira", "Bachaquero",
 ]
 
+taxes = [
+  { name: "Sin IVA", percentage: 0.00 },
+  { name: "IVA", percentage: 0.16 },
+]
+
 states.each do |state_name|
   State.find_or_create_by(name: state_name)
 end
@@ -36,3 +41,10 @@ end
 cities.each do |city_name|
   City.find_or_create_by(name: city_name)
 end
+
+taxes.each do |tax_data|
+  Tax.find_or_create_by(tax_data)
+end
+
+Warehouse.find_or_create_by(name: "warehouse 1", address: "address 1")
+Product.find_or_create_by(name: "Cauchos 1", code: "CAU001")

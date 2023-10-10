@@ -1,4 +1,5 @@
 es:
+  reserved_is_greater_than_stock: "La reserva no puede ser mayor al stock"
   activerecord:
     errors:
       messages:
