@@ -99,7 +99,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_03_235408) do
 
   create_table "taxes", force: :cascade do |t|
     t.string "name", null: false
-    t.decimal "percentage", precision: 4, scale: 4, default: "0.0", null: false
+    t.decimal "percentage", precision: 5, scale: 4, default: "0.0", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_taxes_on_name", unique: true
