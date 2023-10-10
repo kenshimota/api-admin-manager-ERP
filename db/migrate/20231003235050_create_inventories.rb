@@ -8,5 +8,7 @@ class CreateInventories < ActiveRecord::Migration[7.0]
       t.string :observations
       t.timestamps
     end
+
+    add_index :inventories, [:product_id, :warehouse_id], unique: true
   end
 end

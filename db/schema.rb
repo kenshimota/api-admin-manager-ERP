@@ -53,6 +53,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_03_235408) do
     t.string "observations"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["product_id", "warehouse_id"], name: "index_inventories_on_product_id_and_warehouse_id", unique: true
     t.index ["product_id"], name: "index_inventories_on_product_id"
     t.index ["warehouse_id"], name: "index_inventories_on_warehouse_id"
   end
