@@ -117,4 +117,21 @@ RSpec.describe Product, type: :model do
       expect(product).to be_valid
     end
   end
+
+  context "increment reserved and stock a product" do
+    it "the reserved won't be greater than stock in a product" do
+      product = Product.create(params_validated)
+      expect(product.increment :reserved, 20).to_not be_valid
+    end
+
+    it "the reserved won't be fewer than 0 in a product" do
+      product = Product.create(params_validated)
+      expect(product.increment :reserved, -1).to_not be_valid
+    end
+
+    it "the stock won't be fewer than 0 in a product" do
+      product = Product.create(params_validated)
+      expect(product.increment :stock, -1).to_not be_valid
+    end
+  end
 end

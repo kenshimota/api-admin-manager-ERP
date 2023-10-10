@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_01_041215) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_03_235408) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -43,6 +43,30 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_01_041215) do
     t.index ["customer_id", "phone_id"], name: "index_customers_phones_on_customer_id_and_phone_id", unique: true
     t.index ["customer_id"], name: "index_customers_phones_on_customer_id"
     t.index ["phone_id"], name: "index_customers_phones_on_phone_id"
+  end
+
+  create_table "inventories", force: :cascade do |t|
+    t.bigint "product_id", null: false
+    t.integer "stock", default: 0, null: false
+    t.integer "reserved", default: 0, null: false
+    t.bigint "warehouse_id", null: false
+    t.string "observations"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_inventories_on_product_id"
+    t.index ["warehouse_id"], name: "index_inventories_on_warehouse_id"
+  end
+
+  create_table "inventories_histories", force: :cascade do |t|
+    t.bigint "inventory_id", null: false
+    t.integer "before_amount", default: 0
+    t.integer "after_amount", default: 0
+    t.bigint "user_id", null: false
+    t.string "observations"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["inventory_id"], name: "index_inventories_histories_on_inventory_id"
+    t.index ["user_id"], name: "index_inventories_histories_on_user_id"
   end
 
   create_table "phones", force: :cascade do |t|
@@ -113,5 +137,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_01_041215) do
   add_foreign_key "customers", "states"
   add_foreign_key "customers_phones", "customers"
   add_foreign_key "customers_phones", "phones"
+  add_foreign_key "inventories", "products"
+  add_foreign_key "inventories", "warehouses"
+  add_foreign_key "inventories_histories", "inventories"
+  add_foreign_key "inventories_histories", "users"
   add_foreign_key "products", "taxes"
 end

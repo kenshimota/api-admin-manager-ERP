@@ -3,6 +3,6 @@ FactoryBot.define do
     name { "product app - 1" }
     code { "MyString" }
     bar_code { "12345678" }
-    tax { Tax.first }
+    tax { Tax.first || FactoryBot.create(:tax_with_percentage) }
   end
 end
