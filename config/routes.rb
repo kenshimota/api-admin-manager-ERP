@@ -21,5 +21,6 @@ Rails.application.routes.draw do
     resources :warehouses
     resources :inventories
     resources :inventories_histories
+    resources :currencies
   end
 end
