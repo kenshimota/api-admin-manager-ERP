@@ -1,7 +1,8 @@
 FactoryBot.define do
   factory :currency do
-    name { "MyString" }
-    symbol { "MyString" }
-    exchange_rate { "9.99" }
+    code { "USD" }
+    name { "Dolar de Estados Unidos" }
+    symbol { "$" }
+    exchange_rate { 38.2 }
   end
 end
