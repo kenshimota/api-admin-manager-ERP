@@ -31,11 +31,13 @@ class InventoriesController < VerifyAuthenticateController
   # PATCH/PUT /inventories/1
   def update
     ActiveRecord::Base.transaction do
-      data = inventory_params.to_h
-      stock = inventory_params[:stock] - @inventory.stock
-      data.delete(:stock)
+      @inventory.lock!
 
       @inventory.set_user current_user
+      data = inventory_params.to_h
+
+      stock = inventory_params[:stock] - @inventory.stock
+      data.delete(:stock)
       @inventory.increment_stock! stock
 
       if data.size > 0
