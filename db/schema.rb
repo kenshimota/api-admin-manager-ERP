@@ -22,8 +22,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_13_022135) do
   end
 
   create_table "currencies", force: :cascade do |t|
-    t.string "name"
-    t.string "code"
+    t.string "name", null: false
+    t.string "code", null: false
     t.string "symbol"
     t.decimal "exchange_rate", precision: 22, scale: 3, default: "1.0", null: false
     t.datetime "created_at", null: false
