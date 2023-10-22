@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_12_002304) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_13_022135) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -22,8 +22,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_12_002304) do
   end
 
   create_table "currencies", force: :cascade do |t|
-    t.string "name"
-    t.string "code"
+    t.string "name", null: false
+    t.string "code", null: false
     t.string "symbol"
     t.decimal "exchange_rate", precision: 22, scale: 3, default: "1.0", null: false
     t.datetime "created_at", null: false
@@ -101,6 +101,28 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_12_002304) do
     t.index ["tax_id"], name: "index_products_on_tax_id"
   end
 
+  create_table "products_prices", force: :cascade do |t|
+    t.decimal "price", precision: 24, scale: 3, default: "1.0", null: false
+    t.bigint "product_id", null: false
+    t.bigint "currency_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["currency_id"], name: "index_products_prices_on_currency_id"
+    t.index ["product_id", "currency_id"], name: "index_products_prices_on_product_id_and_currency_id", unique: true
+    t.index ["product_id"], name: "index_products_prices_on_product_id"
+  end
+
+  create_table "products_prices_histories", force: :cascade do |t|
+    t.bigint "products_price_id", null: false
+    t.bigint "user_id", null: false
+    t.decimal "price_before", precision: 24, scale: 3, default: "1.0", null: false
+    t.decimal "price_after", precision: 24, scale: 3, default: "1.0", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["products_price_id"], name: "index_products_prices_histories_on_products_price_id"
+    t.index ["user_id"], name: "index_products_prices_histories_on_user_id"
+  end
+
   create_table "states", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
@@ -153,4 +175,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_12_002304) do
   add_foreign_key "inventories_histories", "inventories"
   add_foreign_key "inventories_histories", "users"
   add_foreign_key "products", "taxes"
+  add_foreign_key "products_prices", "currencies"
+  add_foreign_key "products_prices", "products"
+  add_foreign_key "products_prices_histories", "products_prices"
+  add_foreign_key "products_prices_histories", "users"
 end
