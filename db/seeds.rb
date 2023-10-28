@@ -46,5 +46,9 @@ taxes.each do |tax_data|
   Tax.find_or_create_by(tax_data)
 end
 
+ORDER_STATUSES_NAME.each do |key, value|
+  OrdersStatus.find_or_create_by(name: value)
+end
+
 Warehouse.find_or_create_by(name: "warehouse 1", address: "address 1")
 Product.find_or_create_by(name: "Cauchos 1", code: "CAU001")
