@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")
@@ -14,15 +13,17 @@ Rails.application.routes.draw do
     }
 
     resources :taxes
-    resources :cities
-    resources :states
+    resources :cities, only: [:index]
+    resources :states, only: [:index]
     resources :products
     resources :customers
+    resources :orders, only: [:show, :index, :destroy]
     resources :warehouses
     resources :currencies
     resources :inventories
     resources :products_prices
-    resources :inventories_histories
-    resources :products_prices_histories
+    resources :orders_items, except: [:update]
+    resources :inventories_histories, [:index, :show]
+    resources :products_prices_histories, [:index, :show]
   end
 end

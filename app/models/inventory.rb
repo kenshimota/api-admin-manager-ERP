@@ -9,6 +9,7 @@ class Inventory < ApplicationRecord
   validate :check_if_reserved_is_greater_than_stock
   validates :stock, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :reserved, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :product_id, presence: true, uniqueness: { scope: :warehouse_id }
 
   scope :filter_product, ->(product_id) { product_id ? where(product_id: product_id) : self }
   scope :filter_warehouse, ->(warehouse_id) { warehouse_id ? where(warehouse_id: warehouse_id) : self }
@@ -19,10 +20,8 @@ class Inventory < ApplicationRecord
 
   def reserve_stock(amount)
     ActiveRecord::Base.transaction do
-      self.increment :reserved, amount
-      self.product.increment :reserved, amount
-      self.save!
-      self.product.save!
+      self.increment! :reserved, amount
+      self.product.increment! :reserved, amount
     rescue ActiveRecord::RecordInvalid => e
       raise ActiveRecord::Rollback
     end
@@ -54,6 +53,10 @@ class Inventory < ApplicationRecord
     end
 
     self
+  end
+
+  def available
+    self.stock - self.reserved
   end
 
   private
