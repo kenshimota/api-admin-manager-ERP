@@ -26,7 +26,7 @@ class CurrenciesController < VerifyAuthenticateController
     if @currency.save
       render json: @currency, status: :created, location: @currency
     else
-      render json: @currency.errors, status: :unprocessable_entity
+      show_error @currency
     end
   end
 
@@ -35,7 +35,7 @@ class CurrenciesController < VerifyAuthenticateController
     if @currency.update(currency_params)
       render json: @currency, status: :accepted
     else
-      render json: @currency.errors, status: :unprocessable_entity
+      show_error @currency
     end
   end
 
