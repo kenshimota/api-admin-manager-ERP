@@ -25,7 +25,7 @@ class WarehousesController < VerifyAuthenticateController
     if @warehouse.save
       render json: @warehouse, status: :created
     else
-      render json: @warehouse.errors, status: :unprocessable_entity
+      show_error @warehouse
     end
   end
 
@@ -34,7 +34,7 @@ class WarehousesController < VerifyAuthenticateController
     if @warehouse.update(warehouse_params)
       render json: @warehouse, status: :accepted
     else
-      render json: @warehouse.errors, status: :unprocessable_entity
+      show_error @warehouse
     end
   end
 
