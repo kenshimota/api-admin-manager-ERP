@@ -115,6 +115,34 @@ RSpec.describe "/products_prices", type: :request do
       expect(response).to have_http_status(:ok)
       expect(body.length).to be(15)
     end
+
+    it "the prices  page '1', currency_id ':id', metadata '1'", authorized: true do
+      currency = Currency.last
+      get products_prices_url, params: { page: 2, metadata: 1, currency_id: currency.id }
+      body = JSON.parse(response.body)
+      first = body.first
+
+      expect(response).to have_http_status(:ok)
+      expect(body.length).to be(15)
+
+      expect(first["product"].nil?).to be(false)
+      expect(first["currency"].nil?).to be(false)
+      expect(first["tax"].nil?).to be(false)
+    end
+
+    it "the prices  search ':product_code'", authorized: true do
+      product = Product.last
+      get products_prices_url, params: { q: product.code.upcase }
+
+      body = JSON.parse(response.body)
+
+      count = ProductsPrice.where(product_id: product.id).count
+      product_price = ProductsPrice.where(product_id: product.id).first
+
+      expect(response).to have_http_status(:ok)
+      expect(body.length).to be(count)
+      expect(body[0]["price"].to_f).to eq(product_price.price.to_f)
+    end
   end
 
   describe "GET /show" do
@@ -125,7 +153,12 @@ RSpec.describe "/products_prices", type: :request do
 
     it "renders a successful response", authorized: true do
       get products_price_url(products_price), as: :json
+      body = JSON.parse(response.body)
+
       expect(response).to be_successful
+      expect(body["product"].nil?).to be(false)
+      expect(body["currency"].nil?).to be(false)
+      expect(body["tax"].nil?).to be(false)
     end
   end
 
