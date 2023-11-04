@@ -44,6 +44,45 @@ RSpec.describe OrdersItem, type: :model do
       end
     end
 
+    context "an without price" do
+      let(:product) { Product.first || FactoryBot.create(:product_without_tax) }
+
+      before(:each) do
+        inventory = Inventory.new(product_id: product.id, stock: 1000, warehouse_id: warehouse1.id)
+        inventory.set_user user
+        inventory.save!
+      end
+
+      it "an item can't add to an order if it doesn't have a price" do
+        item = OrdersItem.new(order: order, product: product, quantity: 100)
+        expect(item).to_not be_valid
+      end
+    end
+
+    context "product repeat an order" do
+      let(:price_base) { 23.45 }
+      let(:quantity_inventory) { 140 }
+      let(:product1) { Product.where(tax: Tax.where(percentage: 0)).first || FactoryBot.create(:product_without_tax) }
+      let(:product2) { Product.where(tax: Tax.where("percentage > 0 ")).first || FactoryBot.create(:product_with_tax) }
+
+      before(:each) do
+        create_inventory_and_price(2.4, product1, 2600)
+        create_inventory_and_price(2.1, product2, 2300)
+      end
+
+      it "an item can't add to an order if it is repeated" do
+        item = OrdersItem.new(order: order, product: product1, quantity: 100)
+        expect(item).to be_valid
+        item.save!
+
+        item2 = OrdersItem.new(order: order, product: product1, quantity: 110)
+        expect(item2).to_not be_valid
+
+        item3 = OrdersItem.new(order: order, product: product2, quantity: 110)
+        expect(item3).to be_valid
+      end
+    end
+
     context "with product without tax" do
       let(:price_base) { 23.45 }
       let(:quantity_inventory) { 140 }

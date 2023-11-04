@@ -12,7 +12,7 @@ Rails.application.routes.draw do
       },
     }
 
-    resources :taxes
+    resources :taxes, except: [:show]
     resources :cities, only: [:index]
     resources :states, only: [:index]
     resources :products
