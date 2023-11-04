@@ -1,8 +1,10 @@
 require "simplecov"
+
 SimpleCov.start "rails" do
   add_filter "config/"
   add_filter "app/channels/"
   add_filter "app/jobs/"
+  add_filter "app/mailers/application_mailer.rb"
   add_filter "app/controllers/concerns/rack_session_fix.rb"
   add_filter "app/controllers/users/sessions_controller.rb"
   add_filter "app/controllers/users/registrations_controller.rb"
