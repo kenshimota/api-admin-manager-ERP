@@ -16,14 +16,6 @@ RSpec.describe "Taxes", type: :request do
       end
     end
 
-    describe "GET taxes/:id" do
-      it "request without query params" do
-        tax = FactoryBot.create(:tax_without_percentage)
-        get tax_path(tax)
-        expect(response).to have_http_status(:unauthorized)
-      end
-    end
-
     describe "POST taxes/" do
       it "request without query params" do
         get taxes_path

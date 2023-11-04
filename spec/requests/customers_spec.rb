@@ -70,7 +70,6 @@ RSpec.describe "/customers", type: :request do
 
     it "request without query params", :authorized => true do
       get customers_url
-
       body = JSON.parse(response.body)
 
       expect(response).to have_http_status(200)
@@ -136,6 +135,40 @@ RSpec.describe "/customers", type: :request do
       expect(response).to have_http_status(200)
       expect(body.map { |customer| customer["id"] }).to eq(customers.map { |customer| customer.id })
     end
+
+    it "request with query params city_id ':id'", :authorized => true do
+      city = City.last
+      get customers_url, params: { city_id: city.id }
+      body = JSON.parse(response.body)
+
+      count = Customer.where(city: city).count
+
+      expect(response).to have_http_status(200)
+      expect(body.length).to be(count)
+    end
+
+    it "request with query params state_id ':id'", :authorized => true do
+      state = State.last
+      get customers_url, params: { state_id: state.id }
+      body = JSON.parse(response.body)
+
+      count = Customer.where(state: state).count
+
+      expect(response).to have_http_status(200)
+      expect(body.length).to be(count)
+    end
+
+    it "request with query params metadata '1'", :authorized => true do
+      get customers_url, params: { metadata: 1 }
+      body = JSON.parse(response.body)
+      first = body.first
+
+      expect(response).to have_http_status(200)
+      expect(body.length).to be(20)
+      expect(first["state"].nil?).to be(false)
+      expect(first["city"].nil?).to be(false)
+      expect(first["phones"].nil?).to be(false)
+    end
   end
 
   describe "GET /show" do
@@ -148,6 +181,11 @@ RSpec.describe "/customers", type: :request do
 
     it "renders a successful response", authorized: true do
       get customer_url(customer)
+      body = JSON.parse(response.body)
+
+      expect(body["state"].nil?).to be(false)
+      expect(body["city"].nil?).to be(false)
+      expect(body["phones"].nil?).to be(false)
       expect(response).to be_successful
     end
   end

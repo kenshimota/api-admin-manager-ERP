@@ -6,6 +6,6 @@ FactoryBot.define do
 
   factory :tax_with_percentage, class: Tax do
     name { "Tax 16.00%" }
-    percentage { 0.75 }
+    percentage { 0.16 }
   end
 end

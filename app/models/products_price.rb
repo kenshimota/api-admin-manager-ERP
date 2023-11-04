@@ -1,6 +1,7 @@
 class ProductsPrice < ApplicationRecord
   belongs_to :product
   belongs_to :currency
+  has_one :tax, through: :product
   has_many :products_prices_histories, dependent: :destroy
 
   after_create :create_history_first
@@ -14,8 +15,10 @@ class ProductsPrice < ApplicationRecord
     @user = current_user
   end
 
-  scope :currency_id, lambda { |currency_id| !currency_id ? self : where(currency_id: currency_id) }
+  scope :search, ->(q) { where(product: Product.search(q)) if q and !q.empty? }
   scope :product_id, lambda { |product_id| !product_id ? self : where(product_id: product_id) }
+  scope :currency_id, lambda { |currency_id| !currency_id ? self : where(currency_id: currency_id) }
+  scope :metadata, ->(check) { joins(:product, :currency, :tax).includes(:product, :currency, :tax) if check }
 
   private
 

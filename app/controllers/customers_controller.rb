@@ -9,15 +9,19 @@ class CustomersController < VerifyAuthenticateController
 
     @customers = Customer
       .search(search)
+      .city_id(params[:city_id])
+      .state_id(params[:state_id])
+      .metadata(params[:metadata])
       .order_field(order_by)
       .page(params[:page])
 
-    render json: @customers
+    includes = @customers.first.metadata_fields if @customers.length > 0 and params[:metadata]
+    render json: @customers, include: includes
   end
 
   # GET /customers/1
   def show
-    render json: @customer
+    render json: @customer, include: @customer.metadata_fields
   end
 
   # POST /customers

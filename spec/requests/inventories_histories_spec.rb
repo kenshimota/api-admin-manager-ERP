@@ -119,14 +119,27 @@ RSpec.describe "/inventories_histories", type: :request do
       resource = new_inventory
       resource.increment_stock 12
 
-      get inventories_histories_url, params: { inventory_id: resource.id }
+      get inventories_histories_url, params: { inventory_id: resource.id, order_by: { field: :created_at, order: :asc } }
       body = JSON.parse(response.body)
 
       expect(response).to have_http_status(:ok)
       expect(body.length).to be(2)
+
       expect(body[0]["after_amount"]).to be(100)
       expect(body[1]["before_amount"]).to be(100)
       expect(body[1]["after_amount"]).to be(112)
+    end
+
+    it "the inventory histories check if records have metadata", authorized: true do
+      get inventories_histories_url
+      body = JSON.parse(response.body)
+      first = body.first
+
+      expect(response).to have_http_status(:ok)
+      expect(first["product"].nil?).to be(false)
+      expect(first["inventory"].nil?).to be(false)
+      expect(first["warehouse"].nil?).to be(false)
+      expect(first["user"].nil?).to be(false)
     end
   end
 end

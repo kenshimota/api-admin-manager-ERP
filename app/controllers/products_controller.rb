@@ -26,7 +26,7 @@ class ProductsController < VerifyAuthenticateController
     if @product.save
       render json: @product, status: :created, location: @product
     else
-      render json: @product.errors, status: :unprocessable_entity
+      show_error @product
     end
   end
 
@@ -35,7 +35,7 @@ class ProductsController < VerifyAuthenticateController
     if @product.update(product_params)
       render json: @product, status: :accepted
     else
-      render json: @product.errors, status: :unprocessable_entity
+      show_error @product
     end
   end
 
