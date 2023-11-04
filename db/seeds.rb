@@ -46,5 +46,52 @@ taxes.each do |tax_data|
   Tax.find_or_create_by(tax_data)
 end
 
-Warehouse.find_or_create_by(name: "warehouse 1", address: "address 1")
-Product.find_or_create_by(name: "Cauchos 1", code: "CAU001")
+ORDER_STATUSES_NAME.each do |key, value|
+  OrdersStatus.find_or_create_by(name: value)
+end
+
+# TEST SEED
+CURRENCIES_BASE.each do |key, data|
+  attributes = data.clone
+  attributes[:code] = key
+  Currency.find_or_create_by(attributes)
+end
+
+USERS_BASE_TEST.each do |key, data|
+  u = User.where(email: data[:email]).first
+  if u
+    next
+  end
+
+  User.create!(data)
+end
+
+user = User.first
+tax = Tax.first
+currency = Currency.where(code: "USD").first
+
+customer = Customer.find_or_create_by!(
+  name: "Pepito",
+  last_name: "Generico",
+  identity_document: "19785426",
+  state_id: State.first.id,
+  city_id: City.first.id,
+  address: "address example",
+)
+
+warehouse = Warehouse.find_or_create_by!(name: "warehouse 1", address: "address 1")
+product = Product.find_or_create_by!(name: "Cauchos 1", code: "CAU001", tax_id: tax.id)
+
+if ProductsPrice.first.nil?
+  product_price = ProductsPrice.new(price: 10, currency_id: currency.id, product_id: product.id)
+  product_price.set_user user
+  product_price.save!
+end
+
+if Inventory.where(product_id: product.id, warehouse_id: warehouse.id).first.nil?
+  i = Inventory.new(product_id: product.id, stock: 1000, warehouse_id: warehouse.id, observations: "test")
+  i.set_user user
+  i.save!
+end
+
+order = Order.find_or_create_by(customer_id: customer.id, user_id: user.id, currency_id: currency.id)

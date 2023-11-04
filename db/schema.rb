@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_13_022135) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_28_230400) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -78,6 +78,60 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_13_022135) do
     t.datetime "updated_at", null: false
     t.index ["inventory_id"], name: "index_inventories_histories_on_inventory_id"
     t.index ["user_id"], name: "index_inventories_histories_on_user_id"
+  end
+
+  create_table "items_inventories", force: :cascade do |t|
+    t.bigint "orders_item_id", null: false
+    t.bigint "inventory_id", null: false
+    t.integer "quantity", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["inventory_id"], name: "index_items_inventories_on_inventory_id"
+    t.index ["orders_item_id"], name: "index_items_inventories_on_orders_item_id"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.integer "number"
+    t.bigint "user_id", null: false
+    t.bigint "customer_id", null: false
+    t.bigint "orders_status_id", null: false
+    t.bigint "currency_id", null: false
+    t.decimal "subtotal", precision: 24, scale: 3, default: "0.0", null: false
+    t.decimal "tax_amount", precision: 24, scale: 3, default: "0.0", null: false
+    t.decimal "total", precision: 24, scale: 3, default: "0.0", null: false
+    t.integer "products_count", default: 0
+    t.integer "quantity_total", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["currency_id"], name: "index_orders_on_currency_id"
+    t.index ["customer_id"], name: "index_orders_on_customer_id"
+    t.index ["number"], name: "index_orders_on_number", unique: true
+    t.index ["orders_status_id"], name: "index_orders_on_orders_status_id"
+    t.index ["user_id"], name: "index_orders_on_user_id"
+  end
+
+  create_table "orders_items", force: :cascade do |t|
+    t.bigint "product_id", null: false
+    t.bigint "order_id", null: false
+    t.bigint "currency_id", null: false
+    t.decimal "price_without_tax", precision: 24, scale: 3, null: false
+    t.decimal "price", precision: 24, scale: 3, null: false
+    t.integer "quantity", null: false
+    t.decimal "subtotal", precision: 24, scale: 3, null: false
+    t.decimal "tax_amount", precision: 24, scale: 3, null: false
+    t.decimal "total", precision: 24, scale: 3, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["currency_id"], name: "index_orders_items_on_currency_id"
+    t.index ["order_id"], name: "index_orders_items_on_order_id"
+    t.index ["product_id"], name: "index_orders_items_on_product_id"
+  end
+
+  create_table "orders_statuses", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_orders_statuses_on_name", unique: true
   end
 
   create_table "phones", force: :cascade do |t|
@@ -174,6 +228,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_13_022135) do
   add_foreign_key "inventories", "warehouses"
   add_foreign_key "inventories_histories", "inventories"
   add_foreign_key "inventories_histories", "users"
+  add_foreign_key "items_inventories", "inventories"
+  add_foreign_key "items_inventories", "orders_items"
+  add_foreign_key "orders", "currencies"
+  add_foreign_key "orders", "customers"
+  add_foreign_key "orders", "orders_statuses"
+  add_foreign_key "orders", "users"
+  add_foreign_key "orders_items", "currencies"
+  add_foreign_key "orders_items", "orders"
+  add_foreign_key "orders_items", "products"
   add_foreign_key "products", "taxes"
   add_foreign_key "products_prices", "currencies"
   add_foreign_key "products_prices", "products"

@@ -1,5 +1,7 @@
 class Product < ApplicationRecord
   belongs_to :tax
+  has_many :inventories, dependent: :destroy
+  has_many :products_prices, dependent: :destroy
 
   before_create :load_stock_and_reserved
 
@@ -17,6 +19,24 @@ class Product < ApplicationRecord
 
     where("CONCAT(UPPER(name), ' ', UPPER(bar_code),  ' ', UPPER(code)) LIKE UPPER(?)", "%#{search}%")
   }
+
+  def available
+    self.stock - self.reserved
+  end
+
+  def get_price(currency_id)
+    product_price = self.products_prices.where(currency_id: currency_id).first
+
+    if product_price.nil?
+      return 0
+    end
+
+    product_price.price
+  end
+
+  def get_price_total(currency_id)
+    (self.tax.percentage + 1) * self.get_price(currency_id)
+  end
 
   private
 
