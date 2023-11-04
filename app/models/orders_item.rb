@@ -3,6 +3,7 @@ class OrdersItem < ApplicationRecord
   belongs_to :product
   belongs_to :currency
   has_many :items_inventories
+  has_one :customer, through: :order
 
   after_save :update_order
   after_create :reserved_stock
@@ -13,6 +14,7 @@ class OrdersItem < ApplicationRecord
   scope :product_id, lambda { |product_id| where(product_id: product_id) if product_id }
   scope :currency_id, lambda { |currency_id| where(currency_id: currency_id) if currency_id }
   scope :customer_id, lambda { |customer_id| where(order: Order.where(customer_id: customer_id)) if customer_id }
+  scope :metadata, ->(check) { joins(:order, :product, :currency, :customer).includes(:order, :product, :currency, :customer) if check }
 
   private
 
