@@ -23,7 +23,7 @@ Rails.application.routes.draw do
     resources :inventories
     resources :products_prices
     resources :orders_items, except: [:update]
-    resources :inventories_histories, [:index, :show]
-    resources :products_prices_histories, [:index, :show]
+    resources :inventories_histories, only: [:index]
+    resources :products_prices_histories, only: [:index]
   end
 end
