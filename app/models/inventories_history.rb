@@ -1,6 +1,8 @@
 class InventoriesHistory < ApplicationRecord
-  belongs_to :inventory
   belongs_to :user
+  belongs_to :inventory
+  has_one :product, through: :inventory
+  has_one :warehouse, through: :inventory
 
   validates :user_id, presence: true
   validates :inventory_id, presence: true
