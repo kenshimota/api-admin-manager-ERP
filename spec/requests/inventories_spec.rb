@@ -104,6 +104,16 @@ RSpec.describe "/inventories", type: :request do
       expect(body.length).to be(1)
       expect(body[0]["warehouse_id"]).to be(warehouse_aux.id)
     end
+
+    it "the inventories page: '1', metadata: '1'", authorized: true do
+      get inventories_url, params: { metadata: 1 }
+      body = JSON.parse(response.body)
+      first = body.first
+
+      expect(response).to have_http_status(:ok)
+      expect(first["warehouse"].nil?).to be(false)
+      expect(first["product"].nil?).to be(false)
+    end
   end
 
   describe "GET /show" do
@@ -122,7 +132,11 @@ RSpec.describe "/inventories", type: :request do
       inventory.save!
 
       get inventory_url(inventory), as: :json
+      body = JSON.parse(response.body)
+
       expect(response).to be_successful
+      expect(body["product"].nil?).to be(false)
+      expect(body["warehouse"].nil?).to be(false)
     end
   end
 

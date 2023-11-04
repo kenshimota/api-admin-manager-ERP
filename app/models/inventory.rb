@@ -13,6 +13,7 @@ class Inventory < ApplicationRecord
 
   scope :filter_product, ->(product_id) { product_id ? where(product_id: product_id) : self }
   scope :filter_warehouse, ->(warehouse_id) { warehouse_id ? where(warehouse_id: warehouse_id) : self }
+  scope :metadata, ->(check) { joins(:product, :warehouse).includes(:product, :warehouse) if check }
 
   def set_user(current_user)
     @user = current_user
