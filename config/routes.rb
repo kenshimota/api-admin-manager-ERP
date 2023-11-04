@@ -24,6 +24,6 @@ Rails.application.routes.draw do
     resources :products_prices
     resources :orders_items, except: [:update]
     resources :inventories_histories, only: [:index]
-    resources :products_prices_histories, only: [:index]
+    resources :products_prices_histories, only: [:index, :show]
   end
 end
