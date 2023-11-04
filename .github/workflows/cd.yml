@@ -1,12 +1,13 @@
-name: API MANAGER SCHOOL
+name: DEPLOYMENT UPTJAA ERP
 
 on:
   push:
     branches:
       - main
+      - feature/cd
       
 jobs:
-  cd:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -21,4 +22,17 @@ jobs:
       - name: docker push
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/uptjaa-online:${{ github.sha }}
+  
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.UPTJAA_HOST }}
+        username: ${{ secrets.UPTJAA_USERNAME }}
+        password: ${{ secrets.UPTJAA_PASSWORD }}
+        port: ${{ secrets.UPTJAA_PORT }}
+        script: |
+          whoami
 
