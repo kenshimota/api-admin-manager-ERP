@@ -197,6 +197,32 @@ RSpec.describe "Orders", type: :request do
       expect(response).to have_http_status(:ok)
       expect(body.length).to be(0)
     end
+
+    it "the orders q ':username'", authorized: true do
+      current_user = FactoryBot.create(:user_aux)
+      current_order = Order.new(user: current_user, currency: currency, customer: customer)
+      current_order.save!
+
+      get orders_url, params: { q: current_user.username.upcase }
+      body = JSON.parse(response.body)
+
+      expect(response).to have_http_status(:ok)
+      expect(body.length).to be(1)
+    end
+
+    it "the orders parasm query metadata '1'", authorized: true do
+      get orders_url, params: { metadata: 1 }
+      body = JSON.parse(response.body)
+      first = body.first
+
+      expect(response).to have_http_status(:ok)
+      expect(body.length).to be(20)
+
+      expect(first["user"].nil?).to be(false)
+      expect(first["customer"].nil?).to be(false)
+      expect(first["currency"].nil?).to be(false)
+      expect(first["orders_status"].nil?).to be(false)
+    end
   end
 
   describe "GET /show" do

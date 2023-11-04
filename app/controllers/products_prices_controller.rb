@@ -3,20 +3,24 @@ class ProductsPricesController < VerifyAuthenticateController
 
   # GET /products_prices
   def index
+    search = params[:q]
     order_by = params[:order_by]
+    includes = [:product, :tax, :currency] if params[:metadata]
 
     @products_prices = ProductsPrice
+      .search(search)
       .page(params[:page])
       .currency_id(params[:currency_id])
       .product_id(params[:product_id])
+      .metadata(params[:metadata])
       .order_field(order_by)
 
-    render json: @products_prices
+    render json: @products_prices, include: includes
   end
 
   # GET /products_prices/1
   def show
-    render json: @products_price
+    render json: @products_price, include: [:product, :tax, :currency]
   end
 
   # POST /products_prices

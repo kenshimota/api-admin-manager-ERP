@@ -3,18 +3,23 @@ class OrdersItemsController < VerifyAuthenticateController
   before_action :set_item, only: [:show, :destroy]
 
   def index
+    order_by = params[:order_by]
+    includes = [:product, :order, :currency, :customer] if params[:metadata]
+
     @items = OrdersItem
       .page(params[:page])
+      .order_field(order_by)
       .order_id(params[:order_id])
       .product_id(params[:product_id])
       .currency_id(params[:currency_id])
       .customer_id(params[:customer_id])
+      .metadata(params[:metadata])
 
-    render json: @items
+    render json: @items, include: includes
   end
 
   def show
-    render json: @item, include: [:product, :order, :currency]
+    render json: @item, include: [:product, :order, :currency, :customer]
   end
 
   def create

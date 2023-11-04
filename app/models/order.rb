@@ -19,7 +19,14 @@ class Order < ApplicationRecord
   scope :user_id, ->(value) { where(user_id: value) if value }
   scope :currency_id, ->(value) { where(currency_id: value) if value }
   scope :customer_id, ->(value) { where(customer_id: value) if value }
+
+  scope :metadata, ->(check) {
+          joins(:user, :customer, :currency, :orders_status)
+            .includes(:user, :customer, :currency, :orders_status) if check
+        }
+
   scope :orders_status_id, ->(value) { where(orders_status_id: value) if value }
+  scope :search, ->(q) { where(customer: Customer.search(q)).or(where(user: User.search(q))) if q and !q.empty? }
 
   private
 

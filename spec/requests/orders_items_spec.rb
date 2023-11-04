@@ -176,6 +176,20 @@ RSpec.describe "OrdersItems", type: :request do
       expect(response).to have_http_status(:ok)
       expect(body.length).to be(20)
     end
+
+    it "the items with metadata", authorized: true do
+      get orders_items_url, params: { metadata: 1 }
+      body = JSON.parse(response.body)
+      first = body.first
+
+      expect(response).to have_http_status(:ok)
+      expect(body.length).to be(20)
+
+      expect(first["order"].nil?).to be(false)
+      expect(first["product"].nil?).to be(false)
+      expect(first["customer"].nil?).to be(false)
+      expect(first["currency"].nil?).to be(false)
+    end
   end
 
   describe "GET /show" do
@@ -195,8 +209,14 @@ RSpec.describe "OrdersItems", type: :request do
     it "returns http success", authorized: true do
       get orders_item_path(item)
       body = JSON.parse(response.body)
+
       expect(response).to have_http_status(:success)
+
       expect(body["id"]).to eq(item.id)
+      expect(body["order"].nil?).to be(false)
+      expect(body["product"].nil?).to be(false)
+      expect(body["customer"].nil?).to be(false)
+      expect(body["currency"].nil?).to be(false)
     end
   end
 

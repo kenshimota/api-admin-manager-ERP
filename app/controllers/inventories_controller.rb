@@ -3,17 +3,24 @@ class InventoriesController < VerifyAuthenticateController
 
   # GET /inventories
   def index
+    search = params[:q]
+    order_by = params[:order_by]
+    includes = [:product, :warehouse] if params[:metadata]
+
     @inventories = Inventory
+      .search(search)
       .page(params[:page])
+      .order_field(order_by)
+      .metadata(params[:metadata])
       .filter_product(params[:product_id])
       .filter_warehouse(params[:warehouse_id])
 
-    render json: @inventories
+    render json: @inventories, include: includes
   end
 
   # GET /inventories/1
   def show
-    render json: @inventory
+    render json: @inventory, include: [:product, :warehouse]
   end
 
   # POST /inventories
