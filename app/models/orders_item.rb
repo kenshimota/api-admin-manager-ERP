@@ -100,9 +100,23 @@ class OrdersItem < ApplicationRecord
       return
     end
 
+    current = OrdersItem
+      .where(product_id: self.product_id, order_id: self.order_id)
+      .first
+
+    if current
+      errors.add(:product_id, "errors.messages.taken")
+      return
+    end
+
     currency = self.order.currency
     product = self.product
     product.lock!
+
+    if product.get_price_total(currency.id).to_f <= 0
+      errors.add(:product_id, I18n.t("product_must_have_price"))
+      return
+    end
 
     quantity = product.available >= self.quantity ? self.quantity : product.available
 

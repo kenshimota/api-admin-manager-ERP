@@ -23,10 +23,6 @@ class TaxesController < VerifyAuthenticateController
     render json: @tax, status: :created
   end
 
-  def show
-    render json: @tax
-  end
-
   def update
     if !@tax.update(params_tax)
       return show_error @tax

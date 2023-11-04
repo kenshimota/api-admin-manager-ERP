@@ -12,5 +12,7 @@ class CreateOrdersItems < ActiveRecord::Migration[7.0]
       t.decimal :total, null: false, precision: 24, scale: 3
       t.timestamps
     end
+
+    add_index :orders_items, [:order_id, :product_id], unique: true
   end
 end

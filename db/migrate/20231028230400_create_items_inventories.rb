@@ -6,5 +6,7 @@ class CreateItemsInventories < ActiveRecord::Migration[7.0]
       t.integer :quantity, null: false
       t.timestamps
     end
+
+    add_index :items_inventories, [:orders_item_id, :inventory_id], unique: true
   end
 end
