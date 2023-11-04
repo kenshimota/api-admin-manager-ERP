@@ -3,10 +3,12 @@ class InventoriesController < VerifyAuthenticateController
 
   # GET /inventories
   def index
-    includes = [:product, :warehouse] if params[:metadata]
+    search = params[:q]
     order_by = params[:order_by]
+    includes = [:product, :warehouse] if params[:metadata]
 
     @inventories = Inventory
+      .search(search)
       .page(params[:page])
       .order_field(order_by)
       .metadata(params[:metadata])

@@ -114,6 +114,38 @@ RSpec.describe "/inventories", type: :request do
       expect(first["warehouse"].nil?).to be(false)
       expect(first["product"].nil?).to be(false)
     end
+
+    it "the inventories page: '1', q: '36'", authorized: true do
+      warehouse = Warehouse.where("UPPER(name) LIKE UPPER('%first%') ").first
+      product = FactoryBot.create(:product_without_tax)
+      inventory = Inventory.new(product_id: product.id, warehouse_id: warehouse.id, stock: 1001, observations: "the last")
+      inventory.set_user user
+      inventory.save!
+
+      get inventories_url, params: { q: "first".upcase }
+      body = JSON.parse(response.body)
+      first = body.first
+
+      count = Inventory.where(warehouse: warehouse).count
+
+      expect(response).to have_http_status(:ok)
+      expect(body.length).to be(count)
+    end
+
+    it "the inventories page: '1', q: '36'", authorized: true do
+      warehouse = Warehouse.last
+      product = FactoryBot.create(:product_without_tax)
+      inventory = Inventory.new(product_id: product.id, warehouse_id: warehouse.id, stock: 1001, observations: "the last")
+      inventory.set_user user
+      inventory.save!
+
+      get inventories_url, params: { q: "without tax".upcase }
+      body = JSON.parse(response.body)
+      first = body.first
+
+      expect(response).to have_http_status(:ok)
+      expect(body.length).to be(1)
+    end
   end
 
   describe "GET /show" do

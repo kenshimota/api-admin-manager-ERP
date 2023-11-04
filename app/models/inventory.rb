@@ -12,8 +12,9 @@ class Inventory < ApplicationRecord
   validates :product_id, presence: true, uniqueness: { scope: :warehouse_id }
 
   scope :filter_product, ->(product_id) { product_id ? where(product_id: product_id) : self }
-  scope :filter_warehouse, ->(warehouse_id) { warehouse_id ? where(warehouse_id: warehouse_id) : self }
   scope :metadata, ->(check) { joins(:product, :warehouse).includes(:product, :warehouse) if check }
+  scope :filter_warehouse, ->(warehouse_id) { warehouse_id ? where(warehouse_id: warehouse_id) : self }
+  scope :search, ->(q) { where(warehouse: Warehouse.where("UPPER(name) LIKE UPPER(?)", "%#{q}%")).or(where(product: Product.where("CONCAT(UPPER(name), ' ', UPPER(code)) LIKE UPPER(?)", "%#{q}%"))) if q and !q.empty? }
 
   def set_user(current_user)
     @user = current_user
