@@ -9,6 +9,11 @@ class OrdersItem < ApplicationRecord
   before_destroy :before_destroy_item
   before_validation :before_create_item, on: :create
 
+  scope :order_id, lambda { |order_id| where(order_id: order_id) if order_id }
+  scope :product_id, lambda { |product_id| where(product_id: product_id) if product_id }
+  scope :currency_id, lambda { |currency_id| where(currency_id: currency_id) if currency_id }
+  scope :customer_id, lambda { |customer_id| where(order: Order.where(customer_id: customer_id)) if customer_id }
+
   private
 
   def before_destroy_item
