@@ -34,5 +34,7 @@ jobs:
         username: ${{ secrets.UPTJAA_USERNAME }}
         password: ${{ secrets.UPTJAA_PASSWORD }}
         port: ${{ secrets.UPTJAA_PORT }}
-        script: whoami
+        script: |
+          whoami
+          docker pull ${{ secrets.DOCKER_USERNAME }}/uptjaa-online:${{ github.sha }}
 
