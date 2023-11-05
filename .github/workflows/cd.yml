@@ -30,9 +30,9 @@ jobs:
     - name: executing remote ssh commands using password
       uses: appleboy/ssh-action@v1.0.0
       env:
-        - DOCKER_IMAGE=${{ secrets.DOCKER_USERNAME }}/uptjaa-online:${{ github.sha }}
-        - DATABASE_URL=${{ secrets.UPTJAA_DATABASE_URL }}
-        - SECRET_KEY_BASE=${{ secrets.SECRET_KEY_BASE_API }}
+        DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/uptjaa-online:${{ github.sha }}
+        DATABASE_URL: ${{ secrets.UPTJAA_DATABASE_URL }}
+        SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE_API }}
       with:
         host: ${{ secrets.UPTJAA_HOST }}
         username: ${{ secrets.UPTJAA_USERNAME }}
