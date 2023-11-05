@@ -29,17 +29,16 @@ jobs:
     steps:
     - name: executing remote ssh commands using password
       uses: appleboy/ssh-action@v1.0.0
-      env:
-        DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/uptjaa-online:${{ github.sha }}
-        DATABASE_URL: ${{ secrets.UPTJAA_DATABASE_URL }}
-        SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE_API }}
       with:
         host: ${{ secrets.UPTJAA_HOST }}
         username: ${{ secrets.UPTJAA_USERNAME }}
         password: ${{ secrets.UPTJAA_PASSWORD }}
         port: ${{ secrets.UPTJAA_PORT }}
         script: |
-          whoami
+          echo "Set variables that API needs it"
+          DOCKER_IMAGE=${{ secrets.DOCKER_USERNAME }}/uptjaa-online:${{ github.sha }}
+          DATABASE_URL=${{ secrets.UPTJAA_DATABASE_URL }}
+          SECRET_KEY_BASE=${{ secrets.SECRET_KEY_BASE_API }}
           echo "Download the latest version API"
           docker pull $DOCKER_IMAGE
           echo "stop first api"
