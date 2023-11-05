@@ -60,6 +60,76 @@ jobs:
             -e HOSTNAME_APP=web \
             -e RAILS_ENV=production \
             -e SECRET_KEY_BASE=$SECRET_KEY_BASE \
-            -e DATABASE_URL=$DATABASE_URL
+            -e DATABASE_URL=$DATABASE_URL \
             $DOCKER_IMAGE
+          docker exec -it api_1 rails db:migrate
+          docker exec -it api_1 rails db:seed
+          echo "stop second api"
+          sleep 2  
+          API=$(docker ps -q -f name=api_2)
+          if [ ! -z $API ]
+          then
+            docker stop $API
+          fi
+          API=$(docker ps -a -q -f name=api_2)
+          if [ ! -z $API ]
+          then
+            docker rm $API
+          fi
+          sleep 5
+          docker run -d \
+            --name api_2 \
+            --link=database-postgres \
+            -e HOSTNAME_APP=web \
+            -e RAILS_ENV=production \
+            -e SECRET_KEY_BASE=$SECRET_KEY_BASE \
+            -e DATABASE_URL=$DATABASE_URL \
+            $DOCKER_IMAGE
+
+          echo "stop third api"
+          sleep 2  
+          API=$(docker ps -q -f name=api_3)
+          if [ ! -z $API ]
+          then
+            docker stop $API
+          fi
+          API=$(docker ps -a -q -f name=api_3)
+          if [ ! -z $API ]
+          then
+            docker rm $API
+          fi
+          sleep 5
+          docker run -d \
+            --name api_3 \
+            --link=database-postgres \
+            -e HOSTNAME_APP=web \
+            -e RAILS_ENV=production \
+            -e SECRET_KEY_BASE=$SECRET_KEY_BASE \
+            -e DATABASE_URL=$DATABASE_URL \
+            $DOCKER_IMAGE
+          
+          echo "stop fourth api"
+          sleep 2  
+          API=$(docker ps -q -f name=api_4)
+          if [ ! -z $API ]
+          then
+            docker stop $API
+          fi
+          API=$(docker ps -a -q -f name=api_4)
+          if [ ! -z $API ]
+          then
+            docker rm $API
+          fi
+          sleep 5
+          docker run -d \
+            --name api_4 \
+            --link=database-postgres \
+            -e HOSTNAME_APP=web \
+            -e RAILS_ENV=production \
+            -e SECRET_KEY_BASE=$SECRET_KEY_BASE \
+            -e DATABASE_URL=$DATABASE_URL \
+            $DOCKER_IMAGE
+
+
+
 
