@@ -49,7 +49,11 @@ jobs:
           then
             docker stop $API
           fi
-          docker rm $API
+          API=$(docker ps -a -q -f name=api_1)
+          if [ ! -z $API ]
+          then
+            docker rm $API
+          fi
           sleep 5
           docker run -d \
             --name api_1 \
@@ -58,4 +62,5 @@ jobs:
             -e RAILS_ENV=production \
             -e SECRET_KEY_BASE=$SECRET_KEY_BASE \
             -e DATABASE_URL=$DATABASE_URL
+            $DOCKER_IMAGE
 
