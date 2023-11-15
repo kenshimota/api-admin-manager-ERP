@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_28_230400) do
+ActiveRecord::Schema[7.0].define(version: 2023_11_15_032636) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -87,6 +87,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_28_230400) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["inventory_id"], name: "index_items_inventories_on_inventory_id"
+    t.index ["orders_item_id", "inventory_id"], name: "index_items_inventories_on_orders_item_id_and_inventory_id", unique: true
     t.index ["orders_item_id"], name: "index_items_inventories_on_orders_item_id"
   end
 
@@ -123,6 +124,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_28_230400) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["currency_id"], name: "index_orders_items_on_currency_id"
+    t.index ["order_id", "product_id"], name: "index_orders_items_on_order_id_and_product_id", unique: true
     t.index ["order_id"], name: "index_orders_items_on_order_id"
     t.index ["product_id"], name: "index_orders_items_on_product_id"
   end
@@ -184,6 +186,21 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_28_230400) do
     t.index ["name"], name: "index_states_on_name", unique: true
   end
 
+  create_table "suppliers", force: :cascade do |t|
+    t.string "name"
+    t.string "email"
+    t.integer "code_postal"
+    t.bigint "identity_document"
+    t.bigint "city_id", null: false
+    t.bigint "state_id", null: false
+    t.string "address"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["city_id"], name: "index_suppliers_on_city_id"
+    t.index ["identity_document"], name: "index_suppliers_on_identity_document", unique: true
+    t.index ["state_id"], name: "index_suppliers_on_state_id"
+  end
+
   create_table "taxes", force: :cascade do |t|
     t.string "name", null: false
     t.decimal "percentage", precision: 5, scale: 4, default: "0.0", null: false
@@ -242,4 +259,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_28_230400) do
   add_foreign_key "products_prices", "products"
   add_foreign_key "products_prices_histories", "products_prices"
   add_foreign_key "products_prices_histories", "users"
+  add_foreign_key "suppliers", "cities"
+  add_foreign_key "suppliers", "states"
 end
