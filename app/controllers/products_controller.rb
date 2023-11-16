@@ -5,18 +5,20 @@ class ProductsController < VerifyAuthenticateController
   def index
     search = params[:q]
     order_by = params[:order_by]
+    includes = [:tax] if params[:metadata]
 
     @products = Product
       .search(search)
+      .metadata(params[:metadata])
       .order_field(order_by)
       .page(params[:page])
 
-    render json: @products
+    render json: @products, include: includes
   end
 
   # GET /products/1
   def show
-    render json: @product
+    render json: @product, include: [:tax]
   end
 
   # POST /products
