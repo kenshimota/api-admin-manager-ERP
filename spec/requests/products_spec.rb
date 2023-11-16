@@ -92,6 +92,14 @@ RSpec.describe "/products", type: :request do
       expect(first["tax"].nil?).to be(false)
     end
 
+    it "request with query params q: '', page '1'", :authorized => true do
+      get products_url, params: { page: 1, q: "", metadata: 1 }
+      body = JSON.parse(response.body)
+
+      expect(response).to have_http_status(200)
+      expect(body.length).to be(20)
+    end
+
     it "request with query params q: 'product app -', page '1'", :authorized => true do
       get products_url, params: { page: 1, q: "product app -" }
       body = JSON.parse(response.body)
