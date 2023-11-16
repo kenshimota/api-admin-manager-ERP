@@ -19,7 +19,10 @@ class Product < ApplicationRecord
       return self
     end
 
-    where("CONCAT(UPPER(name), ' ', UPPER(bar_code),  ' ', UPPER(code)) LIKE UPPER(?)", "%#{search}%")
+    q = "%#{search}%"
+    where("UPPER(products.name) LIKE  UPPER(?) ", q)
+      .or(where("UPPER(products.code) LIKE  UPPER(?) ", q))
+      .or(where("UPPER(products.bar_code) LIKE  UPPER(?) ", q))
   }
 
   def available
