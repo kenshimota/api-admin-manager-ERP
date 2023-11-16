@@ -12,6 +12,8 @@ class Product < ApplicationRecord
   validates :reserved, numericality: { greater_than_or_equal_to: 0 }
   validate :check_if_reserved_is_greater_than_stock
 
+  scope :metadata, ->(check) { joins(:tax).includes(:tax) if check }
+
   scope :search, lambda { |search|
     if !search
       return self
