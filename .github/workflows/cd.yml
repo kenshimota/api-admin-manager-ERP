@@ -38,6 +38,8 @@ jobs:
           DOCKER_IMAGE=${{ secrets.DOCKER_USERNAME }}/uptjaa-online:${{ github.sha }}
           DATABASE_URL=${{ secrets.UPTJAA_DATABASE_URL }}
           SECRET_KEY_BASE=${{ secrets.SECRET_KEY_BASE_API }}
+          GMAIL_USERNAME=${{ secrets.GMAIL_USERNAME }}
+          GMAIL_PASSWORD_APP=${{ secrets.GMAIL_PASSWORD_APP }}
           echo "Download the latest version API"
           docker pull $DOCKER_IMAGE
           echo "stop first api"
@@ -60,9 +62,10 @@ jobs:
             -e RAILS_ENV=production \
             -e SECRET_KEY_BASE=$SECRET_KEY_BASE \
             -e DATABASE_URL=$DATABASE_URL \
+            -e GMAIL_USERNAME=$GMAIL_USERNAME \
+            -e GMAIL_PASSWORD_APP=$GMAIL_PASSWORD_APP \
             $DOCKER_IMAGE
-          docker exec -it api_1 rails db:migrate
-          docker exec -it api_1 rails db:seed
+          docker exec -it api_1 rails db:migrate db:seed
           echo "stop second api"
           sleep 2  
           API=$(docker ps -q -f name=api_2)
@@ -83,6 +86,8 @@ jobs:
             -e RAILS_ENV=production \
             -e SECRET_KEY_BASE=$SECRET_KEY_BASE \
             -e DATABASE_URL=$DATABASE_URL \
+            -e GMAIL_USERNAME=$GMAIL_USERNAME \
+            -e GMAIL_PASSWORD_APP=$GMAIL_PASSWORD_APP \
             $DOCKER_IMAGE
 
           echo "stop third api"
@@ -105,6 +110,8 @@ jobs:
             -e RAILS_ENV=production \
             -e SECRET_KEY_BASE=$SECRET_KEY_BASE \
             -e DATABASE_URL=$DATABASE_URL \
+            -e GMAIL_USERNAME=$GMAIL_USERNAME \
+            -e GMAIL_PASSWORD_APP=$GMAIL_PASSWORD_APP \
             $DOCKER_IMAGE
           
           echo "stop fourth api"
@@ -127,6 +134,8 @@ jobs:
             -e RAILS_ENV=production \
             -e SECRET_KEY_BASE=$SECRET_KEY_BASE \
             -e DATABASE_URL=$DATABASE_URL \
+            -e GMAIL_USERNAME=$GMAIL_USERNAME \
+            -e GMAIL_PASSWORD_APP=$GMAIL_PASSWORD_APP \
             $DOCKER_IMAGE
 
 
