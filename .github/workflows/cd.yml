@@ -65,7 +65,9 @@ jobs:
             -e GMAIL_USERNAME=$GMAIL_USERNAME \
             -e GMAIL_PASSWORD_APP=$GMAIL_PASSWORD_APP \
             $DOCKER_IMAGE
-          docker exec -it api_1 rails db:migrate db:seed
+          echo "create migration"
+          docker exec -it api_1 rails db:migrate
+          docker exec -it api_1 rails db:seed
           echo "stop second api"
           sleep 2  
           API=$(docker ps -q -f name=api_2)
