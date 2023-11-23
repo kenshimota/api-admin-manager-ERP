@@ -21,6 +21,8 @@ en:
         subject: "Confirmation instructions"
       reset_password_instructions:
         subject: "Reset password instructions"
+        message_code: "Someone has requested a code to change your password. the code to change password is %{code}"
+        sent: "Reset password instructions had been to sent"
       unlock_instructions:
         subject: "Unlock instructions"
       email_changed:
