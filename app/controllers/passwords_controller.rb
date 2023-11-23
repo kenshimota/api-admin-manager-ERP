@@ -45,6 +45,6 @@ class PasswordsController < Devise::PasswordsController
   end
 
   def set_user
-    @user = User.find_by(email: resource_params[:email])
+    @user = User.find_by!(email: resource_params[:email])
   end
 end
