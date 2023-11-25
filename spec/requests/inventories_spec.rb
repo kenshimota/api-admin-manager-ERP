@@ -296,21 +296,61 @@ RSpec.describe "/inventories", type: :request do
   end
 
   describe "DELETE /destroy" do
-    it "destroys the requested inventory" do
-      inventory = Inventory.new valid_attributes
-      inventory.set_user user
-      inventory.save!
+    let(:inventory) do
+      last = Inventory.last
 
-      delete inventory_url(inventory), as: :json
-      expect(response).to have_http_status(:unauthorized)
+      if last
+        return last
+      end
+
+      current = Inventory.new valid_attributes
+      current.set_user user
+      current.save!
+
+      current
     end
 
-    it "destroys the requested inventory", authorized: true do
-      inventory = Inventory.new valid_attributes
-      inventory.set_user user
-      inventory.save!
+    context "inventory without reserved" do
+      it "destroys the requested inventory" do
+        delete inventory_url(inventory), as: :json
+        expect(response).to have_http_status(:unauthorized)
+      end
 
-      expect { delete inventory_url(inventory), as: :json }.to change(Inventory, :count).by(-1)
+      it "destroys the requested inventory", authorized: true do
+        current = inventory
+        expect { delete inventory_url(current), as: :json }.to change(Inventory, :count).by(-1)
+      end
+
+      it "when delete a inventory, it must substraction stock from the product", authorized: true do
+        delete inventory_url(inventory), as: :json
+        product.reload
+
+        expect(response).to have_http_status(:no_content)
+        expect(product.stock).to be(0)
+      end
+    end
+
+    context "inventory with reserved" do
+      let(:to_reverse) { 1 }
+
+      before(:each) do
+        inventory.reserve_stock to_reverse
+        product.reload
+      end
+
+      it "you can't remove inventory if this has been reserved", authorized: true do
+        current = inventory
+        expect { delete inventory_url(current), as: :json }.to change(Inventory, :count).by(0)
+      end
+
+      it "you can't remove inventory if this has been reserved and show error", authorized: true do
+        delete inventory_url(inventory), as: :json
+        current = Product.find(product.id)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(current.stock).to be(product.stock)
+        expect(product.reserved).to be(to_reverse)
+      end
     end
   end
 end

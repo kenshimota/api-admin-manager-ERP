@@ -183,5 +183,50 @@ RSpec.describe "/warehouses", type: :request do
         delete warehouse_url(warehouse)
       }.to change(Warehouse, :count).by(-1)
     end
+
+    context "don't delete a warehouse if those have inventories" do
+      let(:product) do
+        product = Product.first
+
+        if product
+          return product
+        end
+
+        FactoryBot.create(:tax_with_percentage)
+        FactoryBot.create(:product)
+      end
+
+      let(:user) do
+        user = User.first
+
+        if user
+          return user
+        end
+
+        FactoryBot.create(:user)
+      end
+
+      let(:warehouse) { Warehouse.first || Warehouse.create!(valid_attributes) }
+
+      before(:each) do
+        inventory = Inventory.new(stock: 10, reserved: 0, product_id: product.id, warehouse_id: warehouse.id)
+        inventory.set_user user
+        inventory.save
+      end
+
+      it "checking model", authorized: true do
+        expect {
+          delete warehouse_url(warehouse)
+        }.to change(Warehouse, :count).by(0)
+      end
+
+      it "checking response controller", authorized: true do
+        delete warehouse_url(warehouse)
+        body = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(body["error"].nil?).to be(false)
+      end
+    end
   end
 end
