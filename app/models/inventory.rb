@@ -5,6 +5,7 @@ class Inventory < ApplicationRecord
 
   before_create :before_create_inventory
   after_create :after_create_inventory
+  before_destroy :before_destroy_inventory
 
   validate :check_if_reserved_is_greater_than_stock
   validates :stock, presence: true, numericality: { greater_than_or_equal_to: 0 }
@@ -65,6 +66,17 @@ class Inventory < ApplicationRecord
 
   def before_create_inventory
     self.reserved = 0
+  end
+
+  def before_destroy_inventory
+    if self.reserved > 0
+      errors.add(:reserved, I18n.t("inventory_dont_delete"))
+    end
+
+    throw(:abort) if self.errors.present?
+
+    self.product.lock!
+    self.product.increment! :stock, -self.stock
   end
 
   def after_create_inventory
