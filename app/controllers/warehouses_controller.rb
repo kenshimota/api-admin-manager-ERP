@@ -40,7 +40,12 @@ class WarehousesController < VerifyAuthenticateController
 
   # DELETE /warehouses/1
   def destroy
-    @warehouse.destroy
+    ActiveRecord::Base.transaction do
+      @warehouse.destroy!
+    rescue ActiveRecord::RecordNotDestroyed => e
+      render json: { error: I18n.t("warehouse_dont_delete") }, status: :unprocessable_entity
+      raise ActiveRecord::Rollback
+    end
   end
 
   private
