@@ -60,7 +60,12 @@ class InventoriesController < VerifyAuthenticateController
 
   # DELETE /inventories/1
   def destroy
-    @inventory.destroy
+    ActiveRecord::Base.transaction do
+      @inventory.destroy!
+    rescue ActiveRecord::RecordNotDestroyed => e
+      show_error e.record
+      raise ActiveRecord::Rollback
+    end
   end
 
   private
