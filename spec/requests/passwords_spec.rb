@@ -5,12 +5,35 @@ RSpec.describe "Passwords", type: :request do
     let(:user) { FactoryBot.create(:user) || User.first }
 
     context "Success" do
+      it "send email in upcase" do
+        post reset_passwords_url, params: { user: { email: user.email.upcase } }
+        body = JSON.parse(response.body)
+
+        current_user = User.find_by(email: user.email)
+
+        expect(response).to have_http_status(:created)
+        expect(current_user.reset_code.nil?).to be(false)
+        expect(current_user.reset_code_sent_at.nil?).to be(false)
+      end
+
+      it "send email in downcase" do
+        post reset_passwords_url, params: { user: { email: user.email.downcase } }
+        body = JSON.parse(response.body)
+
+        current_user = User.find_by(email: user.email)
+
+        expect(response).to have_http_status(:created)
+        expect(current_user.reset_code.nil?).to be(false)
+        expect(current_user.reset_code_sent_at.nil?).to be(false)
+      end
+
       it "send code" do
         post reset_passwords_url, params: { user: { email: user.email } }
         body = JSON.parse(response.body)
 
         current_user = User.find_by(email: user.email)
 
+        expect(response).to have_http_status(:created)
         expect(current_user.reset_code.nil?).to be(false)
         expect(current_user.reset_code_sent_at.nil?).to be(false)
       end
