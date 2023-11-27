@@ -35,13 +35,12 @@ RSpec.describe Inventory, type: :model do
   let(:params_validated) {
     {
       stock: 10,
-      reserved: 0,
       product_id: product.id,
       warehouse_id: warehouse.id,
     }
   }
 
-  context "create a inventory" do
+  context "new a inventory" do
     it "the reserved won't be greater than stock in a inventory" do
       data = params_validated.clone
       data[:reserved] = data[:stock] + 1
@@ -62,7 +61,9 @@ RSpec.describe Inventory, type: :model do
       inventory = Inventory.new(data)
       expect(inventory).to_not be_valid
     end
+  end
 
+  context "create a inventory" do
     it "success create a inventory" do
       stock = product.stock
 
@@ -81,6 +82,10 @@ RSpec.describe Inventory, type: :model do
 
   context "increment reserved and stock a inventory" do
     let(:inventory) do
+      first = Inventory.first
+
+      return first if first.nil? == false
+
       inventory = Inventory.new(params_validated)
       inventory.set_user user
       inventory.save
@@ -88,52 +93,55 @@ RSpec.describe Inventory, type: :model do
     end
 
     it "the reserved won't be greater than stock in a product" do
-      resource = inventory
-      amount = resource.stock + 1
-      expect(resource.increment :reserved, amount).to_not be_valid
+      amount = inventory.stock + 1
+      inventory.reserve_stock amount
+      expect(inventory.errors.present?).to be(true)
     end
 
     it "the reserved won't be fewer than 0 in a product" do
-      resource = inventory
-      amount = -1
-      expect(resource.increment :reserved, amount).to_not be_valid
+      amount = (inventory.stock + 1) * (-1)
+      inventory.reserve_stock amount
+      expect(inventory.errors.present?).to be(true)
     end
 
     it "success increment the reserved" do
-      resource = inventory
-      amount = resource.stock
-      resource.reserve_stock amount
-      product = Product.find(resource.product_id)
+      amount = inventory.stock
+      inventory.reserve_stock amount
+      product = Product.find(inventory.product_id)
+      inventory.reload
+      product.reload
 
-      expect(resource).to be_valid
-      expect(product.stock).to be(resource.stock)
-      expect(product.reserved).to be(resource.reserved)
+      expect(inventory).to be_valid
+      expect(product.stock).to be(inventory.stock)
+      expect(product.reserved).to be(inventory.reserved)
+      expect(product.created_at).to_not eq(product.updated_at)
+      expect(inventory.created_at).to_not eq(inventory.updated_at)
     end
 
     it "the stock won't be fewer than 0 in a product" do
-      resource = inventory
-      amount = (resource.stock * (-1)) - 1
-      resource.set_user user
-      resource.increment_stock amount
-
-      expect(resource).to_not be_valid
+      amount = (inventory.stock + 1) * (-1)
+      inventory.set_user user
+      inventory.increment_stock amount
+      expect(inventory).to_not be_valid
     end
 
     it "success increment the stock" do
-      resource = inventory
-      amount = resource.stock
-      resource.set_user user
+      amount = inventory.stock
+      inventory.set_user user
 
-      resource.increment_stock amount
+      inventory.increment_stock amount
       product = Product.find(inventory.product_id)
       history = InventoriesHistory.last
+      inventory.reload
 
-      expect(resource).to be_valid
+      expect(inventory).to be_valid
       expect(20).to be(inventory.stock)
       expect(0).to be(inventory.reserved)
       expect(history.inventory_id).to be(inventory.id)
       expect(history.before_amount).to be(amount)
       expect(history.after_amount).to be(inventory.stock)
+      expect(product.created_at).to_not eq(product.updated_at)
+      expect(inventory.created_at).to_not eq(inventory.updated_at)
     end
   end
 end
