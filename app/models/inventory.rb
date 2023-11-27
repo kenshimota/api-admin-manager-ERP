@@ -3,14 +3,15 @@ class Inventory < ApplicationRecord
   belongs_to :warehouse
   has_many :inventories_histories, dependent: :destroy
 
+  before_create :load_reserved
   before_create :before_create_inventory
   after_create :after_create_inventory
   before_destroy :before_destroy_inventory
 
-  validate :check_if_reserved_is_greater_than_stock
   validates :stock, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :reserved, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :product_id, presence: true, uniqueness: { scope: :warehouse_id }
+  validate :check_if_reserved_is_greater_than_stock
 
   scope :filter_product, ->(product_id) { product_id ? where(product_id: product_id) : self }
   scope :metadata, ->(check) { joins(:product, :warehouse).includes(:product, :warehouse) if check }
@@ -21,22 +22,43 @@ class Inventory < ApplicationRecord
     @user = current_user
   end
 
-  def reserve_stock(amount)
-    ActiveRecord::Base.transaction do
+  def reserve_stock!(amount)
+    if amount != 0
       self.increment! :reserved, amount
+      touch(:updated_at)
+
+      self.validate
+      raise ActiveRecord::RecordInvalid.new(self) if errors.present?
+
       self.product.increment! :reserved, amount
-    rescue ActiveRecord::RecordInvalid => e
-      raise ActiveRecord::Rollback
+      self.product.touch(:updated_at)
     end
 
     self
   end
 
+  def reserve_stock(amount)
+    ActiveRecord::Base.transaction do
+      self.reserve_stock! amount
+    rescue ActiveRecord::RecordInvalid => e
+      raise ActiveRecord::Rollback
+    end
+
+    errors.present? == false
+  end
+
   def increment_stock!(amount)
     if amount != 0
       @stock = self.stock
+
       self.increment! :stock, amount
+      touch(:updated_at)
+
+      self.validate
+      raise ActiveRecord::RecordInvalid.new(self) if errors.present?
+
       self.product.increment! :stock, amount
+      self.product.touch(:updated_at)
 
       InventoriesHistory.create!(
         user: @user,
@@ -46,6 +68,8 @@ class Inventory < ApplicationRecord
         observations: self.observations,
       )
     end
+
+    self
   end
 
   def increment_stock(amount)
@@ -55,7 +79,7 @@ class Inventory < ApplicationRecord
       raise ActiveRecord::Rollback
     end
 
-    self
+    errors.present? == false
   end
 
   def available
@@ -70,7 +94,7 @@ class Inventory < ApplicationRecord
 
   def before_destroy_inventory
     if self.reserved > 0
-      errors.add(:reserved, I18n.t("inventory_dont_delete"))
+      errors.add(:reserved, I18n.t(:inventory_dont_delete))
     end
 
     throw(:abort) if self.errors.present?
@@ -93,5 +117,9 @@ class Inventory < ApplicationRecord
     if self.reserved > self.stock
       errors.add(:reserved, I18n.translate(:reserved_is_greater_than_stock))
     end
+  end
+
+  def load_reserved
+    self.reserved = 0
   end
 end
