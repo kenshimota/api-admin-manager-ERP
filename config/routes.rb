@@ -23,7 +23,7 @@ Rails.application.routes.draw do
     resources :states, only: [:index]
     resources :products
     resources :customers
-    resources :orders, only: [:show, :index, :destroy]
+    resources :orders, except: [:update]
     resources :warehouses
     resources :currencies
     resources :inventories
