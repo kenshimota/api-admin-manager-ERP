@@ -23,6 +23,19 @@ class OrdersController < VerifyAuthenticateController
     render json: @order, include: [:user, :currency, :orders_status, :customer]
   end
 
+  def create
+    attributes = params_order.clone
+    attributes[:user_id] = current_user.id
+    @order = Order.new(attributes)
+
+    if !@order.save
+      show_error(@order)
+      return
+    end
+
+    render json: @order, status: :created
+  end
+
   def destroy
     ActiveRecord::Base.transaction do
       @order.destroy!
@@ -33,6 +46,10 @@ class OrdersController < VerifyAuthenticateController
   end
 
   private
+
+  def params_order
+    params.require(:order).permit(:customer_id, :currency_id)
+  end
 
   def set_order
     @order = Order.joins(:user, :currency, :orders_status, :customer).find(params[:id])
