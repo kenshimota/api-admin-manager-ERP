@@ -34,4 +34,5 @@ en:
   dont_update_order: "the order can't be update or delete, because the order isn't pending status"
   reserved_is_greater_than_stock: "the reserved can't be greather than stock in the product"
   warehouse_dont_delete: "The warehouse can't be to remove it, it might that have inventories"
+  tax_dont_delete: "The tax can't be to remove it, it might that have products"
   inventory_dont_delete: "the inventory cna't be remove, it might have items reserved or items requested"

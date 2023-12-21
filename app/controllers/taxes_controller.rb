@@ -32,7 +32,12 @@ class TaxesController < VerifyAuthenticateController
   end
 
   def destroy
-    @tax.destroy
+    ActiveRecord::Base.transaction do
+      @tax.destroy!
+    rescue ActiveRecord::RecordNotDestroyed => e
+      render json: { error: I18n.t("tax_dont_delete") }, status: :unprocessable_entity
+      raise ActiveRecord::Rollback
+    end
   end
 
   private

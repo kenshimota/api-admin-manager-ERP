@@ -156,11 +156,28 @@ RSpec.describe "Taxes", type: :request do
     end
 
     describe "DELETE /taxes/:id" do
-      let(:tax) { FactoryBot.create(:tax_without_percentage) }
+      let(:tax) { Tax.first || FactoryBot.create(:tax_without_percentage) }
 
-      it "tax delete success" do
-        delete tax_path(tax)
-        expect(response).to have_http_status(:no_content)
+      context "failed" do
+        before(:each) do
+          Product.create!(name: "product1", code: "P0001", tax_id: tax.id)
+        end
+
+        it "tax delete with product" do
+          delete tax_path(tax)
+
+          body = JSON.parse(response.body)
+
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(body["error"].nil?).to be(false)
+        end
+      end
+
+      context "success" do
+        it "tax delete success" do
+          delete tax_path(tax)
+          expect(response).to have_http_status(:no_content)
+        end
       end
     end
   end

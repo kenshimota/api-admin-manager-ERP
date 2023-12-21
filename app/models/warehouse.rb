@@ -7,8 +7,8 @@ class Warehouse < ApplicationRecord
       return self
     end
 
-    where("UPPER(name) LIKE UPPER(?)", "%#{search}%")
-      .or(where("UPPER(address) LIKE UPPER(?)", "%#{search}%"))
+    where("UPPER(warehouses.name) LIKE UPPER(?)", "%#{search}%")
+      .or(where("UPPER(warehouses.address) LIKE UPPER(?)", "%#{search}%"))
   }
 
   private
