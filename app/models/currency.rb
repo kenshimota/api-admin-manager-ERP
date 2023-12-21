@@ -9,6 +9,6 @@ class Currency < ApplicationRecord
       return self
     end
 
-    where("CONCAT(UPPER(name), ' ', UPPER(code), ' ', UPPER(symbol)) LIKE UPPER(?)", "%#{search}%")
+    where("CONCAT(UPPER(currencies.name), ' ', UPPER(currencies.code), ' ', UPPER(currencies.symbol)) LIKE UPPER(?)", "%#{search}%")
   }
 end
