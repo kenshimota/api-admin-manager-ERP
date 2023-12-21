@@ -9,7 +9,7 @@ class User < ApplicationRecord
   validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }, uniqueness: { case_sensitive: false }
   validates :password, presence: false, allow_blank: true, format: { with: /(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-.]).{8,}/ }
 
-  scope :search, ->(q) { where("CONCAT(UPPER(username), ' ', UPPER(first_name), ' ', UPPER(last_name)) LIKE UPPER(?)", "%#{q}%") if q and !q.empty? }
+  scope :search, ->(q) { where("CONCAT(UPPER(users.username), ' ', UPPER(users.first_name), ' ', UPPER(users.last_name)) LIKE UPPER(?)", "%#{q}%") if q and !q.empty? }
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable

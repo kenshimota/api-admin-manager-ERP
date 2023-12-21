@@ -21,7 +21,7 @@ class Customer < ApplicationRecord
       return self
     end
 
-    where("CONCAT(UPPER(name), ' ', UPPER(last_name)) LIKE UPPER(?)", "%#{search}%")
-      .or(where("CAST(identity_document AS TEXT) LIKE ?", "%#{search}%"))
+    where("CONCAT(UPPER(customers.name), ' ', UPPER(customers.last_name)) LIKE UPPER(?)", "%#{search}%")
+      .or(where("CAST(customers.identity_document AS TEXT) LIKE ?", "%#{search}%"))
   }
 end
