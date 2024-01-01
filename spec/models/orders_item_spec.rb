@@ -349,6 +349,7 @@ RSpec.describe OrdersItem, type: :model do
       c = item
 
       status = OrdersStatus.where(name: ORDER_STATUSES_NAME[:invoiced]).first
+      order.set_user User.first || Factory.create(:user)
       order.update(orders_status_id: status.id)
       expect { c.destroy }.to change(OrdersItem, :count).by(0)
 

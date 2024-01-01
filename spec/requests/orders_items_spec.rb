@@ -220,7 +220,7 @@ RSpec.describe "OrdersItems", type: :request do
     end
   end
 
-  describe "GET /create" do
+  describe "POST /" do
     let(:valid_attributes) { { product_id: product_with_tax.id, order_id: order.id, quantity: 2 } }
     let(:invalid_attributes) { { product_id: product_with_tax.id, order_id: order.id, quantity: 0 } }
 
@@ -283,6 +283,7 @@ RSpec.describe "OrdersItems", type: :request do
       let(:invoice_status) { OrdersStatus.find_by(name: ORDER_STATUSES_NAME[:invoiced]) }
 
       before(:each) do
+        order.set_user User.first
         order.update!(orders_status_id: invoice_status.id)
       end
 
