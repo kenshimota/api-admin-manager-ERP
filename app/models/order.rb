@@ -28,6 +28,10 @@ class Order < ApplicationRecord
   scope :orders_status_id, ->(value) { where(orders_status_id: value) if value }
   scope :search, ->(q) { where(customer: Customer.search(q)).or(where(user: User.search(q))) if q and !q.empty? }
 
+  def set_user(current_user)
+    @user = current_user
+  end
+
   private
 
   def before_destroy_an_order
@@ -45,6 +49,17 @@ class Order < ApplicationRecord
 
     if order_status.name != ORDER_STATUSES_NAME[:pending]
       errors.add(:orders_status_id, I18n.t(:dont_update_order))
+    end
+
+    status = OrdersStatus.where(id: self.orders_status_id).first
+
+    if self.errors.present? == false
+      case status.name
+      when ORDER_STATUSES_NAME[:invoiced]
+        self.orders_items.each do |item|
+          item.invoice @user
+        end
+      end
     end
   end
 

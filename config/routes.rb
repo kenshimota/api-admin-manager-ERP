@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")
@@ -28,6 +29,7 @@ Rails.application.routes.draw do
     resources :currencies
     resources :inventories
     resources :products_prices
+    resources :invoices, only: [:create]
     resources :orders_items, except: [:update]
     resources :inventories_histories, only: [:index]
     resources :products_prices_histories, only: [:index, :show]
