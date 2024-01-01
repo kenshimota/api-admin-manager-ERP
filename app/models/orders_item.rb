@@ -16,6 +16,14 @@ class OrdersItem < ApplicationRecord
   scope :customer_id, lambda { |customer_id| where(order: Order.where(customer_id: customer_id)) if customer_id }
   scope :metadata, ->(check) { joins(:order, :product, :currency, :customer).includes(:order, :product, :currency, :customer) if check }
 
+  def invoice(current_user)
+    self.items_inventories.each do |item|
+      item.inventory.set_user current_user
+      item.inventory.reserve_stock! -item.quantity
+      item.inventory.increment_stock! -item.quantity
+    end
+  end
+
   private
 
   def before_destroy_item

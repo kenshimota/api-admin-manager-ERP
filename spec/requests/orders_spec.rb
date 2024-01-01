@@ -110,6 +110,7 @@ RSpec.describe "Orders", type: :request do
     it "the orders page '1', orders_status_id ':id'", authorized: true do
       last = Order.joins(:orders_status).includes(:orders_status).last
       status = OrdersStatus.where(name: ORDER_STATUSES_NAME[:invoiced]).first
+      last.set_user User.first
       last.update!(orders_status_id: status.id)
 
       get orders_url, params: { orders_status_id: status.id }
@@ -122,6 +123,7 @@ RSpec.describe "Orders", type: :request do
     it "the orders page '2', orders_status_id ':id'", authorized: true do
       last = Order.joins(:orders_status).includes(:orders_status).last
       status = OrdersStatus.where(name: ORDER_STATUSES_NAME[:invoiced]).first
+      last.set_user User.first
       last.update!(orders_status_id: status.id)
 
       get orders_url, params: { page: 2, orders_status_id: status.id }
@@ -278,6 +280,7 @@ RSpec.describe "Orders", type: :request do
       item = OrdersItem.new(order: order, product: product_with_tax, quantity: quantity)
       item.save!
 
+      order.set_user User.first
       order.update!(orders_status_id: status.id)
 
       expect {
@@ -295,6 +298,8 @@ RSpec.describe "Orders", type: :request do
       quantity = Faker::Number.rand_in_range(1, 80)
       item = OrdersItem.new(order: order, product: product_with_tax, quantity: quantity)
       item.save!
+
+      order.set_user User.first
 
       order.update!(orders_status_id: status.id)
       delete order_url(order), as: :json
