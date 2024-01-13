@@ -19,7 +19,7 @@ class ProductsPrice < ApplicationRecord
   scope :product_id, lambda { |product_id| !product_id ? self : where(product_id: product_id) }
   scope :currency_id, lambda { |currency_id| !currency_id ? self : where(currency_id: currency_id) }
   scope :metadata, ->(check) { joins(:product, :currency, :tax).includes(:product, :currency, :tax) if check }
-  scope :available, ->(available) { where(product: Product.where("products.stock > 0")) if available }
+  scope :available, ->(available) { where(product: Product.where("(products.stock - products.reserved) > 0")) if available }
   scope :filter_order, ->(order_id) { where.not(product: Product.joins(:orders_items).where(orders_items: { order_id: order_id })) if order_id }
 
   private
