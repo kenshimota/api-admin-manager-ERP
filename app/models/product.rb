@@ -1,5 +1,6 @@
 class Product < ApplicationRecord
   belongs_to :tax
+  has_many :orders_items
   has_many :inventories, dependent: :destroy
   has_many :products_prices, dependent: :destroy
 

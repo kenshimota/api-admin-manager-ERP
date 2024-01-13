@@ -130,6 +130,11 @@ class OrdersItem < ApplicationRecord
 
     quantity = product.available >= self.quantity ? self.quantity : product.available
 
+    if quantity <= 0
+      errors.add(:quantity, I18n.t("product_dont_have_stock", count: 0))
+      return
+    end
+
     self.quantity = quantity
     self.currency_id = currency.id
     self.price_without_tax = product.get_price currency.id
