@@ -17,6 +17,7 @@ RSpec.describe "/products_prices", type: :request do
   let(:currency) { Currency.first || FactoryBot.create(:currency) }
   let(:product_attributes) { FactoryBot.attributes_for(:product) }
   let(:product) { Product.first || Product.create!(product_attributes) }
+  let(:warehouse) { Warehouse.first || FactoryBot.create(:warehouse) }
 
   # This should return the minimal set of attributes required to create a valid
   # ProductsPrice. As you add validations to ProductsPrice, be sure to
@@ -142,6 +143,65 @@ RSpec.describe "/products_prices", type: :request do
       expect(response).to have_http_status(:ok)
       expect(body.length).to be(count)
       expect(body[0]["price"].to_f).to eq(product_price.price.to_f)
+    end
+
+    context "with products with stock" do
+      let(:customer) { Customer.first || FactoryBot.create(:customer) }
+
+      before(:each) do
+        aux = FactoryBot.create(:product_with_tax)
+
+        inventory = Inventory.new(
+          stock: 10,
+          observations: "init test",
+          product_id: aux.id,
+          warehouse_id: warehouse.id,
+        )
+
+        inventory.set_user User.first
+        inventory.save!
+
+        products_price = ProductsPrice.new(product_id: aux.id, currency_id: currency.id, price: 11.2)
+        products_price.set_user User.first
+        products_price.save!
+      end
+
+      before(:all) do
+        ORDER_STATUSES_NAME.each do |key, value|
+          OrdersStatus.find_or_create_by(name: value)
+        end
+      end
+
+      after(:all) do
+        ORDER_STATUSES_NAME.each do |key, value|
+          OrdersStatus.limit(1).destroy_by(name: value)
+        end
+      end
+
+      it "the prices the availabled products", authorized: true do
+        get products_prices_url, params: { available: 1, metadata: 1 }
+        body = JSON.parse(response.body)
+        first = body.first
+
+        expect(response).to have_http_status(:ok)
+        expect(body.length).to be(1)
+
+        expect(first["product"].nil?).to be(false)
+        expect(first["currency"].nil?).to be(false)
+        expect(first["tax"].nil?).to be(false)
+      end
+
+      it "the prices the availabled products that it don't have an order", authorized: true do
+        order = Order.create!(customer_id: customer.id, currency_id: currency.id, user_id: User.first.id)
+        item = OrdersItem.create!(product_id: Product.last.id, order_id: order.id, quantity: 1)
+
+        get products_prices_url, params: { available: 1, metadata: 1, filter_order_id: order.id }
+        body = JSON.parse(response.body)
+        first = body.first
+
+        expect(response).to have_http_status(:ok)
+        expect(body.length).to be(0)
+      end
     end
   end
 

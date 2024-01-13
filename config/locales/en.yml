@@ -30,6 +30,7 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
+  product_dont_have_stock: "the product doesn't have stock to be adding to the order"
   product_must_have_price: "the product doesn't have a price to be adding to the order"
   dont_update_order: "the order can't be update or delete, because the order isn't pending status"
   reserved_is_greater_than_stock: "the reserved can't be greather than stock in the product"

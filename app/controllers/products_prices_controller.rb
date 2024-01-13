@@ -13,6 +13,8 @@ class ProductsPricesController < VerifyAuthenticateController
       .currency_id(params[:currency_id])
       .product_id(params[:product_id])
       .metadata(params[:metadata])
+      .available(params[:available])
+      .filter_order(params[:filter_order_id])
       .order_field(order_by)
 
     render json: @products_prices, include: includes

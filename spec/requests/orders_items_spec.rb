@@ -248,6 +248,19 @@ RSpec.describe "OrdersItems", type: :request do
       expect(body["errors"].nil?).to eq(false)
     end
 
+    it "return http failed check response if the product don't have stock", authorized: true do
+      params = valid_attributes.clone
+
+      Inventory.where(product_id: params[:product_id]).update_all(stock: 0)
+      Product.where(id: params[:product_id]).update_all(stock: 0)
+
+      post orders_items_url, params: { item: params }
+      body = JSON.parse(response.body)
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(body["errors"].nil?).to eq(false)
+    end
+
     it "return http success check change model", authorized: true do
       expect {
         post orders_items_url, params: { item: valid_attributes }
