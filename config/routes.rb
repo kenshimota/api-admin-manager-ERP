@@ -19,6 +19,8 @@ Rails.application.routes.draw do
       patch :reset_passwords, to: "passwords#update"
     end
 
+    get 'dashboard/summary'
+
     resources :taxes, except: [:show]
     resources :cities, only: [:index]
     resources :states, only: [:index]
