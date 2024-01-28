@@ -20,7 +20,8 @@ jobs:
           password: ${{ secrets.DOCKER_USER_TOKEN }}
       - name: docker push
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/uptjaa-online:${{ github.sha }}
+          VERSION=`date +"%Y%m%d%H%M"`
+          docker push ${{ secrets.DOCKER_USERNAME }}/uptjaa-online:$VERSION
   
   deploy:
     needs: build
