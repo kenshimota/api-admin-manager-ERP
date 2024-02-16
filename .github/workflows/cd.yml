@@ -1,3 +1,4 @@
+
 name: DEPLOYMENT UPTJAA ERP
 
 on:
@@ -6,27 +7,13 @@ on:
       - main
       
 jobs:
-
-  version-time:
-    runs-on: ubuntu-latest
-    steps:
-      - name: get current time
-        id: get-current-time
-        run: echo "VERSION=$(date +'%Y.%m.%d.%H.%M')" >> $GITHUB_ENV
-
   build:
-    needs: version-time
     runs-on: ubuntu-latest
-    env:
-      VERSION: ${{ needs.build.outputs.VERSION }}
     steps:
       - uses: actions/checkout@v3
-      - name: show time
-        run: |
-          echo $VERSION
       - name: docker build
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/uptjaa-online:${{ env.VERSION }} .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/uptjaa-online:${{ github.sha }} .
       - name: login docker hub
         uses: docker/login-action@v3
         with:
@@ -34,13 +21,11 @@ jobs:
           password: ${{ secrets.DOCKER_USER_TOKEN }}
       - name: docker push
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/uptjaa-online:${{ env.VERSION }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/uptjaa-online:${{ github.sha }}
   
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    env:
-      VERSION: ${{ needs.build.outputs.VERSION }}
     steps:
     - name: executing remote ssh commands using password
       uses: appleboy/ssh-action@v1.0.0
@@ -51,7 +36,7 @@ jobs:
         port: ${{ secrets.UPTJAA_PORT }}
         script: |
           echo "Set variables that API needs it"
-          DOCKER_IMAGE=${{ secrets.DOCKER_USERNAME }}/uptjaa-online:$VERSION
+          DOCKER_IMAGE=${{ secrets.DOCKER_USERNAME }}/uptjaa-online:${{ github.sha }}
           DATABASE_URL=${{ secrets.UPTJAA_DATABASE_URL }}
           SECRET_KEY_BASE=${{ secrets.SECRET_KEY_BASE_API }}
           GMAIL_USERNAME=${{ secrets.GMAIL_USERNAME }}
@@ -107,7 +92,6 @@ jobs:
             -e GMAIL_USERNAME=$GMAIL_USERNAME \
             -e GMAIL_PASSWORD_APP=$GMAIL_PASSWORD_APP \
             $DOCKER_IMAGE
-
           echo "stop third api"
           sleep 2  
           API=$(docker ps -q -f name=api_3)
@@ -155,7 +139,3 @@ jobs:
             -e GMAIL_USERNAME=$GMAIL_USERNAME \
             -e GMAIL_PASSWORD_APP=$GMAIL_PASSWORD_APP \
             $DOCKER_IMAGE
-
-
-
-
