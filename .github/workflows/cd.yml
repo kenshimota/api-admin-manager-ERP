@@ -17,6 +17,8 @@ jobs:
   build:
     needs: version-time
     runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.build.outputs.VERSION }}
     steps:
       - uses: actions/checkout@v3
       - name: show time
@@ -37,6 +39,8 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.build.outputs.VERSION }}
     steps:
     - name: executing remote ssh commands using password
       uses: appleboy/ssh-action@v1.0.0
