@@ -19,6 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: show time
+      run: |
+        echo "${{ steps.get-current-time.outputs.VERSION }}"
       - name: docker build
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/uptjaa-online:$VERSION .
