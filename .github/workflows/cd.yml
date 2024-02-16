@@ -15,6 +15,7 @@ jobs:
         run: echo "VERSION=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
 
   build:
+    needs: version-time
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
