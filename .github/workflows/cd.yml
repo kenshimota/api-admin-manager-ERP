@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: get current time
         id: get-current-time
-        run: echo "VERSION=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+        run: echo "VERSION=$(date +'%Y.%m.%d.%H.%M')" >> $GITHUB_ENV
 
   build:
     needs: version-time
