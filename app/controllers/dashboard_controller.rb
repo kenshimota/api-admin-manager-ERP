@@ -20,7 +20,7 @@ class DashboardController < VerifyAuthenticateController
       created_at: today_range
     ).count
 
-    response[:total_invoices_month] = Order.where(created_at: start_month..end_month).count
+    response[:total_invoices_month] = Order.where(created_at: start_month..end_month, orders_status_id: status_invoiced.id).count
 
     response[:total_orders_today] = Order.where(
       created_at: today_range
