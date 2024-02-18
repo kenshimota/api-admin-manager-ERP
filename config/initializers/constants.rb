@@ -13,9 +13,17 @@ USERS_BASE_TEST = {
     password: "managEr1.",
     email: "admin@example.com",
   },
-}
+}.freeze
 
 CURRENCIES_BASE = {
   VES: { name: "Bolivar Venezolano", exchange_rate: 1, symbol: "Bss" },
   USD: { name: "Dolar Estado Unidense", exchange_rate: 37.23, symbol: "$" },
+}.freeze
+
+
+USERS_ROLES_CONST = {
+  manager: "manager",
+  customer: "customer",
+  inventory: "inventory-specialist",
+  sale: "sale-person",
 }.freeze
