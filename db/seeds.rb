@@ -57,13 +57,30 @@ CURRENCIES_BASE.each do |key, data|
   Currency.find_or_create_by(attributes)
 end
 
+USERS_ROLES_CONST.each do |key, name|
+  Role.find_or_create_by(name: name)
+end
+
 USERS_BASE_TEST.each do |key, data|
   u = User.where(email: data[:email]).first
   if u
     next
   end
 
-  User.create!(data)
+  u = User.create!(data)
+
+  role = Role.find_or_create_by!(name: USERS_ROLES_CONST[:manager] )
+  UsersRole.create!(user: u, role: role)
+  
+  c = Customer.create!(
+    name: data[:first_name],
+    last_name: data[:last_name],
+    identity_document: data[:identity_document],
+    state_id: State.first.id,
+    city_id: City.first.id
+  )
+
+  UsersCustomer.create(user: u, customer: c)
 end
 
 user = User.first
