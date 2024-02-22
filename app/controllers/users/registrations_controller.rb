@@ -28,6 +28,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
           role = Role.find_by(name: USERS_ROLES_CONST[:customer])
           UsersRole.create(role: role, user: resource)
           UsersCustomer.create(user: resource, customer: @customer)
+
+          render json: resource, include: [:role, :customer], status: :created
+          return
         end
       end
   end
