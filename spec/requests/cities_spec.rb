@@ -5,7 +5,7 @@ RSpec.describe "Cities", type: :request do
     describe "GET cities/" do
       it "request without query params" do
         get cities_path
-        expect(response).to have_http_status(:unauthorized)
+        expect(response).to have_http_status(:ok)
       end
     end
   end
