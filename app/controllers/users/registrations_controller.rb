@@ -13,9 +13,24 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # end
 
   # POST /resource
-  # def create
-  #   super
-  # end
+  def create
+      @customer = Customer.new(customer_params)
+
+      if !@customer.save 
+        render json: { errors: @customer.errors }, status: :unprocessable_entity
+        return
+      end
+      
+      super do |resource|
+        if resource.errors.any?
+          @customer.destroy!
+        else
+          role = Role.find_by(name: USERS_ROLES_CONST[:customer])
+          UsersRole.create(role: role, user: resource)
+          UsersCustomer.create(user: resource, customer: @customer)
+        end
+      end
+  end
 
   # GET /resource/edit
   # def edit
@@ -41,6 +56,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
   #   super
   # end
 
+  
+
   # protected
 
   # If you have extra params to permit, append them to the sanitizer.
@@ -51,6 +68,20 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # If you have extra params to permit, append them to the sanitizer.
   def configure_account_update_params
     devise_parameter_sanitizer.permit(:account_update, keys: [:first_name, :last_name, :identity_document])
+  end
+
+  private 
+  
+  # Only allow a list of trusted parameters through.
+  def customer_params
+    params.require(:customer).permit(
+      :name,
+      :last_name,
+      :identity_document,
+      :state_id,
+      :city_id,
+      :address
+    )
   end
 
   # The path used after sign up.
