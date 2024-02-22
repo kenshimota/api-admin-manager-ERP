@@ -5,7 +5,7 @@ RSpec.describe "States", type: :request do
     describe "GET states/" do
       it "request without query params" do
         get states_path
-        expect(response).to have_http_status(:unauthorized)
+        expect(response).to have_http_status(:ok)
       end
     end
   end
