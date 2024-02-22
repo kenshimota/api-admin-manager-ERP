@@ -20,6 +20,7 @@ Rails.application.routes.draw do
     end
 
     get 'dashboard/summary'
+    get :users, to: "user#index"
 
     resources :taxes, except: [:show]
     resources :cities, only: [:index]
