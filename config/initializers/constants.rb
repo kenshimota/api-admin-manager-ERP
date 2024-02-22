@@ -26,4 +26,4 @@ USERS_ROLES_CONST = {
   customer: "customer",
   inventory: "inventory-specialist",
   sale: "sale-person",
-}
+}.freeze

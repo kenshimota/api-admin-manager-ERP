@@ -1,3 +1,4 @@
+=begin 
 class ResourceProtectedController < VerifyAuthenticateController
   
     private
@@ -13,6 +14,8 @@ class ResourceProtectedController < VerifyAuthenticateController
     def does_user_have_roles(roles)
       is_allow = false
       @current_user = current_user
+
+
       current_roles = @current_user.roles
       roles = Set.new(roles)
   
@@ -31,3 +34,4 @@ class ResourceProtectedController < VerifyAuthenticateController
       render json: { errors: model.errors }, status: :unprocessable_entity
     end
   end
+=end
