@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_11_22_223421) do
+ActiveRecord::Schema[7.0].define(version: 2024_02_21_031849) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -179,6 +179,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_22_223421) do
     t.index ["user_id"], name: "index_products_prices_histories_on_user_id"
   end
 
+  create_table "roles", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_roles_on_name", unique: true
+  end
+
   create_table "states", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
@@ -216,6 +223,24 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_22_223421) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  create_table "users_customers", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "customer_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_users_customers_on_customer_id", unique: true
+    t.index ["user_id"], name: "index_users_customers_on_user_id", unique: true
+  end
+
+  create_table "users_roles", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "role_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["role_id"], name: "index_users_roles_on_role_id"
+    t.index ["user_id"], name: "index_users_roles_on_user_id", unique: true
+  end
+
   create_table "warehouses", force: :cascade do |t|
     t.string "name", null: false
     t.string "address"
@@ -246,4 +271,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_22_223421) do
   add_foreign_key "products_prices", "products"
   add_foreign_key "products_prices_histories", "products_prices"
   add_foreign_key "products_prices_histories", "users"
+  add_foreign_key "users_customers", "customers"
+  add_foreign_key "users_customers", "users"
+  add_foreign_key "users_roles", "roles"
+  add_foreign_key "users_roles", "users"
 end
