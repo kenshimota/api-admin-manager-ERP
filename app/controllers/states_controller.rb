@@ -1,4 +1,4 @@
-class StatesController < VerifyAuthenticateController
+class StatesController < ApplicationController
   def index
     search = params[:q]
     order_by = params[:order_by]
