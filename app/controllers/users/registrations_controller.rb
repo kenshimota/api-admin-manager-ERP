@@ -4,8 +4,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
   include RackSessionFix
 
   respond_to :json
+  before_action :set_user, only: [:update_role]
+  before_action :authenticate_user!, only: [:update_role]
   before_action :configure_sign_up_params, only: [:create]
   before_action :configure_account_update_params, only: [:update]
+
 
   # GET /resource/sign_up
   # def new
@@ -28,12 +31,34 @@ class Users::RegistrationsController < Devise::RegistrationsController
           role = Role.find_by(name: USERS_ROLES_CONST[:customer])
           UsersRole.create(role: role, user: resource)
           UsersCustomer.create(user: resource, customer: @customer)
-
-          render json: resource, include: [:role, :customer], status: :created
-          return
         end
       end
   end
+
+  # PUT /resource/:id/role/
+  def update_role
+    if current_user.nil?
+      render json: { error: "Without user" }, status: :unauthorized
+      return
+    end
+    
+    if current_user.role.name != USERS_ROLES_CONST[:manager] 
+      render json: { error: "Forbidden" }, status: 403
+      return
+    end
+
+    @role = Role.find_by(name: params[:role][:name])
+    @relationship = UsersRole.find_by(user_id: @user.id)
+    @relationship.role_id = @role.id
+
+    if !@relationship.save
+      render json: { errors: @relationship.errors }, status: :unprocessable_entity
+      return       
+    end
+
+    render json: @user, include: [:role, :customer], status: :created
+  end
+
 
   # GET /resource/edit
   # def edit
@@ -86,6 +111,21 @@ class Users::RegistrationsController < Devise::RegistrationsController
       :address
     )
   end
+
+  def role_params
+    params.require(:role).permit(:name)
+  end
+
+  def set_user 
+    @user = User.find(params[:id])
+  end
+
+  def respond_with(resource, _opts = {})
+    if resource
+      render json: resource, include: [:role, :customer], status: :created
+    end
+  end
+
 
   # The path used after sign up.
   # def after_sign_up_path_for(resource)
