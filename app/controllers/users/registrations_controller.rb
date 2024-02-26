@@ -14,11 +14,24 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # POST /resource
   def create
-      @customer = Customer.new(customer_params)
+      data = customer_params.clone
 
-      if !@customer.save 
-        render json: { errors: @customer.errors }, status: :unprocessable_entity
-        return
+      @customer = Customer.find_by(identity_document: data[:identity_document])
+
+      if !@customer
+        @customer = Customer.new(customer_params)
+
+        if !@customer.save 
+          render json: { errors: @customer.errors }, status: :unprocessable_entity
+          return
+        end
+      else
+        r = UsersCustomer.find_by(customer_id: @customer.id)
+        if r 
+          @customer = Customer.new(customer_params)
+          render json: { errors: @customer.errors }, status: :unprocessable_entity
+          return
+        end
       end
       
       super do |resource|
@@ -28,7 +41,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
           role = Role.find_by(name: USERS_ROLES_CONST[:customer])
           UsersRole.create(role: role, user: resource)
           UsersCustomer.create(user: resource, customer: @customer)
-
           render json: resource, include: [:role, :customer], status: :created
           return
         end
