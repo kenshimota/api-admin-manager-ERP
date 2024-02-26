@@ -17,10 +17,12 @@ Rails.application.routes.draw do
       post :reset_passwords, to: "passwords#create"
       put :reset_passwords, to: "passwords#update"
       patch :reset_passwords, to: "passwords#update"
+      put "users/:id/role", to: "users/registrations#update_role"
     end
 
     get 'dashboard/summary'
     get :users, to: "user#index"
+
 
     resources :taxes, except: [:show]
     resources :cities, only: [:index]
