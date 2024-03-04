@@ -26,6 +26,21 @@ class Product < ApplicationRecord
       .or(where("UPPER(products.bar_code) LIKE  UPPER(?) ", q))
   }
 
+  scope :with_stock, lambda { |check|
+
+    if check == nil
+      return self
+    end
+
+    if check.to_i == 1
+      return where("products.stock > 0")
+    elsif check.to_i == 0
+      return where("products.stock = 0")   
+    end
+    
+    self
+  }
+
   def available
     self.stock - self.reserved
   end
