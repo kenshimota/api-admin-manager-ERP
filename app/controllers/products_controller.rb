@@ -9,6 +9,7 @@ class ProductsController < VerifyAuthenticateController
 
     @products = Product
       .search(search)
+      .with_stock(params[:with_stock])
       .metadata(params[:metadata])
       .order_field(order_by)
       .page(params[:page])
